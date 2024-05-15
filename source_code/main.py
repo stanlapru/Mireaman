@@ -15,7 +15,7 @@ pygame.display.set_caption("ПД")
 WHITE = (255, 255, 255)
 
 # Create player
-player = Player(100, 300)
+player = Player(100, 100)
 
 # Create environment
 environment = Environment()
