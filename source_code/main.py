@@ -36,11 +36,13 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                player.vel_x = -5
+                player.move_left()
             elif event.key == pygame.K_RIGHT:
-                player.vel_x = 5
+                player.move_right()
             elif event.key == pygame.K_SPACE or event.key == pygame.K_x:
                 player.jump()  
+            elif event.key == pygame.K_z: 
+                player.shoot()
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT and player.vel_x < 0:
                 player.vel_x = 0
@@ -54,6 +56,7 @@ while running:
     # Draw environment and player
     environment.draw(screen)
     player.draw(screen)
+    player.bullets.draw(screen)
 
     pygame.display.flip()
     clock.tick(60)  # Cap at 60 FPS
