@@ -7,7 +7,7 @@ pygame.init()
 
 # Set up the screen
 screen_width = 640
-screen_height = 480
+screen_height = 560
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("ПД")
 
@@ -54,6 +54,7 @@ while running:
     player.update(environment.platforms)
 
     # Draw environment and player
+    screen.blit(pygame.image.load("resources/textures/environment/intro.png").convert(), (0, 0))
     environment.draw(screen)
     player.draw(screen)
     player.bullets.draw(screen)

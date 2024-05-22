@@ -1,22 +1,16 @@
 import pygame
 from button import Button
 
-class MainScreen:
+class PortalScreen:
     def __init__(self, game):
         self.game = game
         pygame.font.init()
         self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
 
-    def handle_mouse_click(self, pos):
-        # Check if the click is within a certain region on the screen
-        # If yes, switch to the second screen
-        if 100 < pos[0] < 200 and 100 < pos[1] < 200:
-            self.game.switch_screen(self.game.second_screen)
-
     def draw(self, screen):
         screen.fill((128, 128, 255))  # Clear the screen
-        self.render_text("Моя Игра №12 - ПД:ЦО", (screen.get_width() // 2, screen.get_height() // 2), screen)
-        self.render_text("Нажмите чтобы начать!", (screen.get_width() // 2, screen.get_height() // 2 + 40), screen)
+        self.render_text("Экран портала", (screen.get_width() // 2, screen.get_height() // 2), screen)
+        self.render_text("На этом всё", (screen.get_width() // 2, screen.get_height() // 2 + 40), screen)
 
     def render_text(self, text, position, screen):
         text_surface = self.font.render(text, True, (255, 255, 255))  # Render the text
