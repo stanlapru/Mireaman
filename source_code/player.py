@@ -111,7 +111,7 @@ class Player(pygame.sprite.Sprite):
         sprite, sprite_size = self.get_sprite(self.animation_frame, self.get_animation_row(), self.direction)
         # Pass frame and row arguments to get_sprite method
         surface.blit(sprite, self.rect)
-        pygame.draw.rect(surface, (255, 0, 0), self.rect, 1)
+        # pygame.draw.rect(surface, (255, 0, 0), self.rect, 1)
 
     def move_left(self):
         self.vel_x = -5
