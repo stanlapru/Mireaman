@@ -1,16 +1,8 @@
 import pygame
-from platform import Platform
+from platform2 import Platform
 from portal import Portal
-from box import MathBox
-from box import PhysicsBox
-from box import LanguageBox
-from box import LiteratureBox
-from box import GeographyBox
-from box import SocialBox
-from box import RussianBox
-from box import CodingBox
-from box import ChemistryBox
-from box import BiologyBox
+from source_code.lesson_box import MathBox
+
 
 class Environment:
     def __init__(self):

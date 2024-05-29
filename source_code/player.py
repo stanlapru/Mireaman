@@ -18,8 +18,8 @@ def load_image(name, colorkey=None):
     return image
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, screen):
-        super().__init__()
+    def __init__(self, x, y, screen, *group):
+        super().__init__(*group)
         self.screen = screen
         self.sprite_sheet_path = "mireaman/sprites.png"
         self.sprite_sheet = load_image(self.sprite_sheet_path)

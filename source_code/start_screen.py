@@ -1,7 +1,7 @@
 import pygame
-from environment import Environment
 from player import Player
 from portal import Portal
+from lesson_box import LessonBox
 
 class StartScreen:
     def __init__(self, game, screen):
@@ -9,26 +9,25 @@ class StartScreen:
         self.screen = screen
         self.player = Player(30, 380, screen)
         self.portal = Portal(1520, 360, 50, 100)
+        self.lesson_dict = {0: {'name': 'Литература', 'path': 'resources/textures/blocks/literature.png'},
+                            1: {'name': 'География', 'path': 'resources/textures/blocks/geography.png'},
+                            2: {'name': 'Обществознание', 'path': 'resources/textures/blocks/social.png'},
+                            3: {'name': 'Русский', 'path': 'resources/textures/blocks/russian.png'},
+                            4: {'name': 'Математика', 'path': 'resources/textures/blocks/math.png'},
+                            5: {'name': 'Физика', 'path': 'resources/textures/blocks/physics.png'},
+                            6: {'name': 'Иностранный язык', 'path': 'resources/textures/blocks/language.png'},
+                            7: {'name': 'Программирование', 'path': 'resources/textures/blocks/coding.png'},
+                            8: {'name': 'Химия', 'path': 'resources/textures/blocks/chemistry.png'},
+                            9: {'name': 'Биология', 'path': 'resources/textures/blocks/biology.png'},
+                            }
 
         # Create environment
-        self.environment = Environment()
-        self.environment.add_platform(0, 480, 1620, 20)  # Example floor
+        self.environment = pygame.sprite.Group()
+        for key, value in self.lesson_dict.items():
+             LessonBox(50+key*150, 300, 40, 40, value['path'], key, self.environment)
         # self.environment.add_platform(0, 20, 620, 20)  # Example top
-        self.environment.add_platform(-20, 0, 20, 620)   # Example left wall
-        self.environment.add_platform(1600, 20, 20, 620) # Example right wall
-        
-        self.environment.add_box4(50,320)
-        self.environment.add_box5(200,320)
-        self.environment.add_box6(350,320)
-        self.environment.add_box7(500,320)
-        
-        self.environment.add_box(630,320)
-        self.environment.add_box2(730,320)
-        self.environment.add_box3(830,320)
-        self.environment.add_box8(930,320)
-        
-        self.environment.add_box9(1130,320)
-        self.environment.add_box10(1330,320)
+        #self.environment.add_platform(-20, 0, 20, 620)   # Example left wall
+        #self.environment.add_platform(1600, 20, 20, 620) # Example right wall
 
         self.background = pygame.image.load("resources/textures/environment/intro.png").convert()
 
@@ -41,7 +40,8 @@ class StartScreen:
 
     def update(self, events):
         self.handle_events(events)
-        self.player.update(self.environment.platforms, self.environment.boxes, self.portal)
+        #self.player.update(self.environment.platforms, self.environment.boxes, self.portal)
+        
         self.update_camera()
 
     def handle_events(self, events):
@@ -86,13 +86,14 @@ class StartScreen:
         screen.blit(self.background, (-self.camera_offset_x, 0))  # Draw the background image with camera offset
 
         # Draw environment and player with camera offset
-        for platform in self.environment.platforms:
-            platform.draw(screen, self.camera_offset_x)
+        # for platform in self.environment.platforms:
+        #     platform.draw(screen, self.camera_offset_x)
             
-        for box in self.environment.boxes:
-            box.draw(screen, self.camera_offset_x)
+        # for box in self.environment.boxes:
+        #     box.draw(screen, self.camera_offset_x)
+
+        self.environment.draw(self.screen)
 
         self.portal.draw(screen, self.camera_offset_x)
         self.player.draw(screen, self.camera_offset_x)
-        self.player.bullets.draw(screen)
-
+        # self.player.bullets.draw(screen)

@@ -11,7 +11,7 @@ class Game:
         info = pygame.display.Info()
         self.width = info.current_w
         self.height = info.current_h - 128
-        #self.screen = pygame.display.set_mode((self.width, self.height))
+        # self.screen = pygame.display.set_mode((self.width, self.height))
         self.screen = pygame.display.set_mode((640, 538))
         self.FPS = 60
         self.clock = pygame.time.Clock()
@@ -31,7 +31,7 @@ class Game:
                     running = False
                     self.game_screen()
             main_screen.update()
-            main_screen.draw(self.screen)
+            main_screen.draw()
             self.clock.tick(self.FPS)
             pygame.display.flip()
 
