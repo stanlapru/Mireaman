@@ -3,6 +3,7 @@
 import pygame
 import sys
 from main_screen import MainScreen
+from portal_screen import PortalScreen
 from start_screen import StartScreen
 
 class Game:
@@ -11,8 +12,8 @@ class Game:
         info = pygame.display.Info()
         self.width = info.current_w
         self.height = info.current_h - 128
-        # self.screen = pygame.display.set_mode((self.width, self.height))
-        self.screen = pygame.display.set_mode((640, 538))
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        # self.screen = pygame.display.set_mode((640, 538))
         self.FPS = 60
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("ПД")
@@ -46,9 +47,26 @@ class Game:
                     self.terminate()
             start_screen.update(pygame.event.get())
             start_screen.draw(self.screen)
+            if start_screen.portal_touched:
+                running = False
+                self.portal_screen()
             self.clock.tick(self.FPS)
             pygame.display.flip()
-
+    
+    def portal_screen(self):
+        running = True
+        portal_screen = PortalScreen(self.screen)
+        while running:
+            self.screen.fill(pygame.Color('#d87093'))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    self.terminate()
+            portal_screen.update()
+            portal_screen.draw(self.screen)
+            self.clock.tick(self.FPS)
+            pygame.display.flip()
+    
     def terminate(self):
         pygame.quit()
         sys.exit()

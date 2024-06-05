@@ -2,13 +2,13 @@ import pygame
 from player import Player
 from portal import Portal
 from lesson_box import LessonBox
+from platform_collision import PlatformCollision
 
 class StartScreen:
-    def __init__(self, game, screen):
+    def __init__(self, game, screen: pygame.Surface):
         self.game = game
         self.screen = screen
-        self.player = Player(30, 380, screen)
-        self.portal = Portal(1520, 360, 50, 100)
+        self.portal = Portal(self.screen.get_width()-80, 360, 50, 100)
         self.lesson_dict = {0: {'name': 'Литература', 'path': 'resources/textures/blocks/literature.png'},
                             1: {'name': 'География', 'path': 'resources/textures/blocks/geography.png'},
                             2: {'name': 'Обществознание', 'path': 'resources/textures/blocks/social.png'},
@@ -21,27 +21,34 @@ class StartScreen:
                             9: {'name': 'Биология', 'path': 'resources/textures/blocks/biology.png'},
                             }
 
+        self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
+
         # Create environment
         self.environment = pygame.sprite.Group()
         for key, value in self.lesson_dict.items():
              LessonBox(50+key*150, 300, 40, 40, value['path'], key, self.environment)
         # self.environment.add_platform(0, 20, 620, 20)  # Example top
-        #self.environment.add_platform(-20, 0, 20, 620)   # Example left wall
-        #self.environment.add_platform(1600, 20, 20, 620) # Example right wall
+        # self.environment.add_platform(-20, 0, 20, 620)   # Example left wall
+        # self.environment.add_platform(1600, 20, 20, 620) # Example right wall
+
+        self.player = Player(50, 400, 'resources/textures/mireaman/sprites.png', 60, 60, self.environment)
+
+        PlatformCollision(0, 500, 1800, 20, self.environment)
+        PlatformCollision(0, 0, 20, 800, self.environment)
+        PlatformCollision(1780, 0, 20, 800, self.environment)
 
         self.background = pygame.image.load("resources/textures/environment/intro.png").convert()
 
-        self.player_speed = 5
-
         # Camera properties
         self.camera_offset_x = 0
-        self.camera_margin_x = 640 // 2
-        self.world_width = 1600  # Example world width limit
+        self.camera_margin_x = self.screen.get_width() // 2
+        self.world_width = self.screen.get_width()
+        self.portal_touched = False
 
     def update(self, events):
         self.handle_events(events)
-        #self.player.update(self.environment.platforms, self.environment.boxes, self.portal)
-        
+        self.portal_touched = self.player.portal_touched
+        self.player.update(self.environment, self.portal)
         self.update_camera()
 
     def handle_events(self, events):
@@ -59,8 +66,6 @@ class StartScreen:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE or event.key == pygame.K_x:
                     self.player.jump()
-                elif event.key == pygame.K_z:
-                    self.player.shoot()
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT and self.player.vel_x < 0:
                     self.player.stop_movement()
@@ -92,8 +97,29 @@ class StartScreen:
         # for box in self.environment.boxes:
         #     box.draw(screen, self.camera_offset_x)
 
-        self.environment.draw(self.screen)
+       # Remove the player from the environment group before drawing
+        self.environment.remove(self.player)
+        
+        # Draw the environment without the player
+        self.custom_draw(self.environment, screen)
+        
+        # Draw the player separately with camera offset
+        self.player.draw(screen, self.camera_offset_x)
+        
+        # Add the player back to the environment group
+        self.environment.add(self.player)
 
         self.portal.draw(screen, self.camera_offset_x)
-        self.player.draw(screen, self.camera_offset_x)
         # self.player.bullets.draw(screen)
+
+        self.render_text("Position: "+', '.join(tuple(str(i) for i in self.player.rect.center)), (200, 32))
+
+    def custom_draw(self, sprite_group, surface):
+        for sprite in sprite_group:
+            if sprite != self.player:
+                surface.blit(sprite.image, (sprite.rect.x - self.camera_offset_x, sprite.rect.y))
+
+    def render_text(self, text, position):
+        text_surface = self.font.render(text, True, (255, 255, 255))  # Render the text
+        text_rect = text_surface.get_rect(center=position)  # Center the text
+        self.screen.blit(text_surface, text_rect)  # Blit the text onto the screen

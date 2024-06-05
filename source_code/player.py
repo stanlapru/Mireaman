@@ -3,6 +3,8 @@ from bullet import Bullet
 import os
 import sys
 from portal_screen import PortalScreen
+from lesson_box import LessonBox
+from platform_collision import PlatformCollision
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('resources/textures', name)
@@ -18,13 +20,12 @@ def load_image(name, colorkey=None):
     return image
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, screen, *group):
+    def __init__(self, x, y, texture, width, height, *group):
         super().__init__(*group)
-        self.screen = screen
         self.sprite_sheet_path = "mireaman/sprites.png"
         self.sprite_sheet = load_image(self.sprite_sheet_path)
-        self.rect = pygame.Rect(x, y, 34, 46)
-        self.image = self.get_sprite(0, 0, direction="right")
+        self.image = pygame.transform.scale(pygame.image.load(texture), (width, height))
+        self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
         self.vel_x = 0
         self.vel_y = 0
@@ -36,28 +37,31 @@ class Player(pygame.sprite.Sprite):
         self.animation_state = "idle"
         self.frame_delay = 10  
         self.frame_counter = 0  
-        self.bullets = pygame.sprite.Group()
-        self.clock = pygame.time.Clock()
-        self.FPS = 60
+        self.portal_touched = False
 
-    def update(self, platforms, boxes, portal):
+
+    # обновление позиции игрока
+    def update(self, environment, portal):
         self.apply_gravity()
         self.rect.x += self.vel_x
-        self.check_collision(platforms, boxes, portal, "x")
-        self.check_collision(platforms, boxes, portal, "x")
+        self.check_collision(environment, portal, "x")
         self.rect.y += self.vel_y
-        self.check_collision(platforms, boxes, portal, "y")
-        self.check_collision(platforms, boxes, portal, "y")
-        self.update_animation(self.direction)
-        self.bullets.update()
+        self.check_collision(environment, portal, "y")
+        self.frame_counter += 1
+        print(self.frame_counter, self.rect.topleft)
 
-    def apply_gravity(self):
+    # гравитация
+    def apply_gravity(self): # Сломано, почему???????????
         self.vel_y += self.gravity
+        if self.vel_y > 10:
+            self.vel_y = 10
+        if self.vel_y < -10:
+            self.vel_y = -10
 
     def jump(self):
         if not self.jumping:
             self.jumping = True
-            self.vel_y = self.jump_power
+            self.vel_y = -self.jump_power
 
     def stop_jump(self):
         if self.jumping and self.vel_y < -3:
@@ -67,80 +71,48 @@ class Player(pygame.sprite.Sprite):
         self.vel_x = 0
         
     def move_right(self):
-        self.vel_x = 5
+        self.vel_x = -5
         self.direction = "right"
         
     def move_left(self):
-        self.vel_x = -5
+        self.vel_x = 5
         self.direction = "left"
 
-    def check_collision(self, platforms, boxes, portal, axis):
-        for platform in platforms:
-            if self.rect.colliderect(platform.rect):
+    def check_collision(self, environment, portal, axis):
+        for entity in environment:
+            if self.rect.colliderect(entity.rect):
+                if isinstance(entity, LessonBox) or isinstance(entity, PlatformCollision):
+                    entity.selected = True
                 if axis == "x":
                     if self.vel_x > 0:
-                        self.rect.right = platform.rect.left
+                        self.rect.right = entity.rect.left
                     elif self.vel_x < 0:
-                        self.rect.left = platform.rect.right
+                        self.rect.left = entity.rect.right
                 elif axis == "y":
                     if self.vel_y > 0:
-                        self.rect.bottom = platform.rect.top
+                        self.rect.bottom = entity.rect.top
                         self.vel_y = 0
                         self.jumping = False
                     elif self.vel_y < 0:
-                        self.rect.top = platform.rect.bottom
-                        self.vel_y = 0
-                        
-        for platform in boxes:
-            if self.rect.colliderect(platform.rect):
-                platform.selected = not platform.selected
-                if axis == "x":
-                    if self.vel_x > 0:
-                        self.rect.right = platform.rect.left
-                    elif self.vel_x < 0:
-                        self.rect.left = platform.rect.right
-                elif axis == "y":
-                    if self.vel_y > 0:
-                        self.rect.bottom = platform.rect.top
-                        self.vel_y = 0
-                        self.jumping = False
-                    elif self.vel_y < 0:
-                        self.rect.top = platform.rect.bottom
+                        self.rect.top = entity.rect.bottom
                         self.vel_y = 0
                         
         if self.rect.colliderect(portal.rect):
-            self.portal_screen()
+            self.portal_touched = True
 
-    def portal_screen(self):
-        running = True
-        main_screen = PortalScreen(self.screen)
-        while running:
-            self.screen.fill(pygame.Color('#d87093'))
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                    self.terminate()
-            main_screen.update()
-            main_screen.draw(self.screen)
-            self.clock.tick(self.FPS)
-            pygame.display.flip()
-    
-    def terminate(self):
-        pygame.quit()
-        sys.exit()
 
-    def update_animation(self, direction):
-        if self.jumping:
-            self.animation_state = "jumping"
-        elif self.vel_x != 0:
-            self.animation_state = "movement"
-        else:
-            self.animation_state = "idle"
+    # def update_animation(self, direction):
+    #     if self.jumping:
+    #         self.animation_state = "jumping"
+    #     elif self.vel_x != 0:
+    #         self.animation_state = "movement"
+    #     else:
+    #         self.animation_state = "idle"
 
-        self.frame_counter += 1
-        if self.frame_counter >= self.frame_delay:
-            self.animation_frame = (self.animation_frame + 1) % 3  # 7 frames per animation
-            self.frame_counter = 0
+    #     self.frame_counter += 1
+    #     if self.frame_counter >= self.frame_delay:
+    #         self.animation_frame = (self.animation_frame + 1) % 3  # 7 frames per animation
+    #         self.frame_counter = 0
 
     def get_sprite(self, frame, row, direction):
         sprite_width = 34
