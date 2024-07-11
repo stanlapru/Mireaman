@@ -1,10 +1,12 @@
 # Запускать это
-
+# todo: https://github.com/MyreMylar/pygame_gui_examples https://github.com/Grimmys/rpg_tactical_fantasy_game
 import pygame
+import pygame_gui
 import sys
 from main_screen import MainScreen
 from portal_screen import PortalScreen
 from start_screen import StartScreen
+from world_screen import WorldScreen
 
 class Game:
     def __init__(self, size: tuple[int, int]) -> None:
@@ -17,7 +19,7 @@ class Game:
         self.FPS = 60
         self.clock = pygame.time.Clock()
         pygame.display.set_caption("ПД")
-        self.menu_screen()
+        self.world_screen()
 
     def menu_screen(self):
         running = True
@@ -64,6 +66,21 @@ class Game:
                     self.terminate()
             portal_screen.update()
             portal_screen.draw(self.screen)
+            self.clock.tick(self.FPS)
+            pygame.display.flip()
+            
+    def world_screen(self):
+        running = True
+        world_screen = WorldScreen(self, self.screen)
+        while running:
+            self.screen.fill(pygame.Color('#d87093'))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    self.terminate()
+            world_screen.update(pygame.event.get())
+            
+            world_screen.draw(self.screen)
             self.clock.tick(self.FPS)
             pygame.display.flip()
     
