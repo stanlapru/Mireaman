@@ -1,4 +1,5 @@
 import pygame
+import pygame_gui
 from support import *
 from tile import *
 from world import *
@@ -9,12 +10,22 @@ class World:
         self.display_surface = pygame.display.get_surface()
         self.visible_sprites = YSortCamGroup()
         self.obstacle_sprites = pygame.sprite.Group()
+
         self.create_map()
         
     def create_map(self):
         layouts = {
-            'boundary': import_csv_layout('./resources/tmx/map_walkable.csv')
+            'boundary': import_csv_layout('./resources/tmx/map_collision.csv'),
+            'decorations1': import_csv_layout('./resources/tmx/map_softdecorations1.csv'),
+            'decorations2': import_csv_layout('./resources/tmx/map_softdecorations2.csv'),
+            'decorations3': import_csv_layout('./resources/tmx/map_softdecorations3.csv'),
+            'solids1': import_csv_layout('./resources/tmx/map_harddecorations1.csv'),
+            'solids2': import_csv_layout('./resources/tmx/map_harddecorations2.csv'),
         }
+        graphics = {
+            'overworld': import_folder('./resources/tmx/tsx/Overworld')
+        }
+
         for style,layout in layouts.items():
             for row_idx,row in enumerate(layout):
                 for col_idx,col in enumerate(row):
@@ -23,6 +34,10 @@ class World:
                         y = row_idx * TILESIZE
                         if style == 'boundary':
                             Tile((x,y), [self.obstacle_sprites], 'invisible')
+                        # if style == 'decorations1' or style == 'decorations2' or style == 'decorations3':
+                        #     Tile((x,y), [self.visible_sprites], 'walkable')
+                        # if style == 'solids1' or style == 'solids2':
+                        #     Tile((x,y), [self.visible_sprites], 'solid')
         #         if col == 'x':
         #             Tile((x,y),[self.visible_sprites, self.obstacle_sprites])
         #         if col == 'p':
@@ -40,7 +55,7 @@ class YSortCamGroup(pygame.sprite.Group):
         self.half_height = self.display.get_size()[1] // 2
         self.offset = pygame.math.Vector2()
         
-        self.floor_surface = pygame.image.load("./resources/textures/environment/map.png").convert()
+        self.floor_surface = pygame.image.load("./resources/textures/environment/world_big.png").convert()
         self.floor_rect = self.floor_surface.get_rect(topleft = (0,0))
         
     def custom_draw(self, player):

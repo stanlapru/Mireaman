@@ -6,7 +6,7 @@ import threading
 import sys
 from settings import *
 from world import *
-
+from start_screen import *
 
 class Game:
     def __init__(self):
@@ -24,15 +24,32 @@ class Game:
         
         self.clock = pygame.time.Clock()
         self.world = World()
+        self.menu_screen()
+
         
+    def menu_screen(self):
+        running = True
+        main_screen = StartScreen(self.screen)
+        while running:
+            self.screen.fill(pygame.Color('#d87093'))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    self.terminate()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    running = False
+                    self.run()
+            main_screen.update()
+            main_screen.draw()
+            pygame.display.flip()
+            
     def run(self):
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                    
-            self.screen.fill('black')
+            self.screen.fill('#1E7CB7')
             self.world.run()
             pygame.display.update()
             self.clock.tick(FPS)
