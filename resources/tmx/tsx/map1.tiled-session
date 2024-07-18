@@ -1,0 +1,64 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "font.tsx",
+    "expandedProjectPaths": [
+    ],
+    "exportAsImage.useCurrentScale": true,
+    "fileStates": {
+        "Inner.tsx": {
+            "scaleInDock": 1
+        },
+        "NPC_test.tsx": {
+            "scaleInDock": 1
+        },
+        "Overworld.tsx": {
+            "scaleInDock": 1
+        },
+        "cave.tsx": {
+            "scaleInDock": 1
+        },
+        "character.tsx": {
+            "scaleInDock": 1
+        },
+        "font.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "log.tsx": {
+            "scaleInDock": 1
+        },
+        "map.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 446,
+                "y": 728
+            }
+        },
+        "objects.tsx": {
+            "scaleInDock": 1
+        }
+    },
+    "last.exportedFilePath": "C:/Users/i7/Documents/Dev/pygame-kurs/Mireaman/resources/tmx",
+    "map.height": 128,
+    "map.lastUsedExportFilter": "CSV файлы (*.csv)",
+    "map.lastUsedFormat": "tmx",
+    "map.width": 128,
+    "openFiles": [
+        "map.tmx",
+        "font.tsx"
+    ],
+    "project": "map1.tiled-project",
+    "recentFiles": [
+        "map.tmx",
+        "font.tsx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}
