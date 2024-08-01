@@ -1,139 +1,120 @@
 import pygame
-from bullet import Bullet
-import os
-import sys
-from portal_screen import PortalScreen
-from lesson_box import LessonBox
-from platform_collision import PlatformCollision
-
-def load_image(name, colorkey=None):
-    fullname = os.path.join('resources/textures', name)
-    if not os.path.isfile(fullname):
-        print('not found', fullname)
-        sys.exit()
-    image = pygame.image.load(fullname)
-    if colorkey is not None:
-        image = image.convert()
-        if colorkey == -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-    return image
+from settings import *
+from support import import_folder
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y, texture, width, height, *group):
-        super().__init__(*group)
-        self.sprite_sheet_path = "mireaman/sprites.png"
-        self.sprite_sheet = load_image(self.sprite_sheet_path)
-        self.image = pygame.transform.scale(pygame.image.load(texture), (width, height))
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
-        self.vel_x = 0
-        self.vel_y = 0
-        self.gravity = 0.5
-        self.jump_power = -10
-        self.jumping = False
-        self.direction = "right"
-        self.animation_frame = 0
-        self.animation_state = "idle"
-        self.frame_delay = 10  
-        self.frame_counter = 0  
-        self.portal_touched = False
-
-
-    # обновление позиции игрока
-    def update(self, environment, portal):
-        self.apply_gravity()
-        self.rect.x += self.vel_x
-        self.check_collision(environment, portal, "x")
-        self.rect.y += self.vel_y
-        self.check_collision(environment, portal, "y")
-        self.frame_counter += 1
-        print(self.frame_counter, self.rect.topleft)
-
-    # гравитация
-    def apply_gravity(self): # Сломано, почему???????????
-        self.vel_y += self.gravity
-        if self.vel_y > 10:
-            self.vel_y = 10
-        if self.vel_y < -10:
-            self.vel_y = -10
-
-    def jump(self):
-        if not self.jumping:
-            self.jumping = True
-            self.vel_y = -self.jump_power
-
-    def stop_jump(self):
-        if self.jumping and self.vel_y < -3:
-            self.vel_y = -3
-
-    def stop_movement(self):
-        self.vel_x = 0
+    def __init__(self, pos, groups, obstacle_sprites, data):
+        super().__init__(groups)
+        self.image = pygame.image.load('./resources/textures/player/player.png').convert_alpha()
+        self.rect = self.image.get_rect(topleft = pos)
+        self.hitbox = self.rect.inflate(-22,-22)
         
-    def move_right(self):
-        self.vel_x = -5
-        self.direction = "right"
+        self.import_player_assets()
+        self.status = 'down'
+        self.frame_index = 0
+        self.animation_speed = 0.15
+  
+        self.direction = pygame.math.Vector2()
+        self.speed = 5
+        self.interacting = False
+        self.interact_cd = 200
+        self.interact_time = None
         
-    def move_left(self):
-        self.vel_x = 5
-        self.direction = "left"
-
-    def check_collision(self, environment, portal, axis):
-        for entity in environment:
-            if self.rect.colliderect(entity.rect):
-                if isinstance(entity, LessonBox) or isinstance(entity, PlatformCollision):
-                    entity.selected = True
-                if axis == "x":
-                    if self.vel_x > 0:
-                        self.rect.right = entity.rect.left
-                    elif self.vel_x < 0:
-                        self.rect.left = entity.rect.right
-                elif axis == "y":
-                    if self.vel_y > 0:
-                        self.rect.bottom = entity.rect.top
-                        self.vel_y = 0
-                        self.jumping = False
-                    elif self.vel_y < 0:
-                        self.rect.top = entity.rect.bottom
-                        self.vel_y = 0
-                        
-        if self.rect.colliderect(portal.rect):
-            self.portal_touched = True
-
-
-    # def update_animation(self, direction):
-    #     if self.jumping:
-    #         self.animation_state = "jumping"
-    #     elif self.vel_x != 0:
-    #         self.animation_state = "movement"
-    #     else:
-    #         self.animation_state = "idle"
-
-    #     self.frame_counter += 1
-    #     if self.frame_counter >= self.frame_delay:
-    #         self.animation_frame = (self.animation_frame + 1) % 3  # 7 frames per animation
-    #         self.frame_counter = 0
-
-    def get_sprite(self, frame, row, direction):
-        sprite_width = 34
-        sprite_height = 46
-        x_start = frame * sprite_width
-        y_start = row * sprite_height
-        sprite = self.sprite_sheet.subsurface(pygame.Rect(x_start, y_start, sprite_width, sprite_height))
+        self.obstacle_sprites = obstacle_sprites
+        self.data = data
         
-        if direction == "left":
-            sprite = pygame.transform.flip(sprite, True, False)
+    def import_player_assets(self):
+        character_path = './resources/textures/player/'
+        self.animations = {
+            'up':[], 'down':[], 'left':[], 'right':[], 
+            'up_idle':[], 'down_idle':[], 'left_idle':[], 'right_idle':[],
+        }
+        
+        for animation in self.animations.keys():
+            full_path = character_path + animation
+            self.animations[animation] = import_folder(full_path)
+            
+    def get_status(self):
+        if self.direction.x == 0 and self.direction.y == 0:
+            if not 'idle' in self.status and not 'interact' in self.status:
+                self.status = self.status + '_idle'
+    
+    def animate(self):
+        animation = self.animations[self.status]
+        
+        # loop over the frame index 
+        self.frame_index += self.animation_speed
+        if self.frame_index >= len(animation):
+            self.frame_index = 0
 
-        return sprite, sprite.get_rect().size
+        # set the image
+        self.image = animation[int(self.frame_index)]
+        self.rect = self.image.get_rect(center = self.hitbox.center)
+    
+    def input(self):
+        keys = pygame.key.get_pressed()
 
-    def get_animation_row(self):
-        if self.animation_state == "idle":
-            return 0
-        elif self.animation_state == "jumping":
-            return 1
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            self.direction.y = -1
+            self.status = 'up'
+        elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            self.direction.y = 1
+            self.status = 'down'
         else:
-            return 2
-
-    def draw(self, surface, camera_offset_x):
-        sprite, sprite_size = self.get_sprite(self.animation_frame, self.get_animation_row(), self.direction)
-        surface.blit(sprite, (self.rect.x - camera_offset_x, self.rect.y))
+            self.direction.y = 0
+            
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            self.direction.x = -1
+            self.status = 'left'
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.direction.x = 1
+            self.status = 'right'
+        else:
+            self.direction.x = 0
+            
+        # interact
+        if keys[pygame.K_e] and not self.interacting:
+            self.interacting = True
+            self.interact_time = pygame.time.get_ticks()
+            
+    def move(self,speed):
+        if self.direction.magnitude() != 0:
+            self.direction = self.direction.normalize()
+            
+        self.hitbox.x += self.direction.x * speed
+        self.data['pos_x'] = self.hitbox.x
+        self.collision('horizontal')
+        self.hitbox.y += self.direction.y * speed
+        self.data['pos_y'] = self.hitbox.y
+        self.collision('vertical')
+        self.rect.center = self.hitbox.center
+        
+    def cooldowns(self):
+        current_time = pygame.time.get_ticks()
+        if self.interacting:
+            if current_time - self.interact_time >= self.interact_cd:
+                self.interacting = False
+        
+    def collision(self,direction):
+        if direction == 'horizontal':
+            for sprite in self.obstacle_sprites:
+                if sprite.hitbox.colliderect(self.hitbox):
+                    if self.direction.x > 0: # P ->
+                        self.hitbox.right = sprite.hitbox.left
+                    if self.direction.x < 0: # <- P
+                        self.hitbox.left = sprite.hitbox.right
+        
+        if direction == 'vertical':
+            for sprite in self.obstacle_sprites:
+                if sprite.hitbox.colliderect(self.hitbox):
+                    if self.direction.y < 0: # P up
+                        self.hitbox.top = sprite.hitbox.bottom
+                    if self.direction.y > 0: # down P
+                        self.hitbox.bottom = sprite.hitbox.top
+            
+    def update(self):
+        self.input()
+        self.cooldowns()
+        self.get_status()
+        self.animate()
+        self.move(self.speed)
