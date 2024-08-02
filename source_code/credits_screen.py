@@ -28,7 +28,7 @@ class CreditsScreen:
             self.game.switch_screen(self.game.second_screen)
 
     def draw(self):
-        self.game.fill(pygame.Color('#d87093'))
+        self.game.fill(pygame.Color('#000000'))
 
         for r, s in self.texts:
             r.move_ip(0, -1)

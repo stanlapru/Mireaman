@@ -6,12 +6,13 @@ from world import *
 from player import *
 
 class World:
-    def __init__(self, data):
+    def __init__(self, data, new):
         self.display_surface = pygame.display.get_surface()
         self.visible_sprites = YSortCamGroup()
         self.obstacle_sprites = YSortCamGroup()
         self.foreground_sprites = ForegroundGroup()
         self.foreground_sprites_2 = ForegroundGroup()
+        self.load_save = new
         
         self.data = data
         pygame.mixer.music.load("./resources/audio/music/Kevin MacLeod - Cipher.mp3")
@@ -77,7 +78,10 @@ class World:
                             #     Tile((x, y), [self.visible_sprites], tile_surface)
                         else:
                             print(f"Invalid tile index {tile_index} at position ({row_idx}, {col_idx})")
-        self.player = Player((self.data['pos_x'],self.data['pos_y']),[self.visible_sprites], self.obstacle_sprites, self.data)
+        if self.load_save == True:
+            self.player = Player((self.data['pos_x'],self.data['pos_y']),[self.visible_sprites], self.obstacle_sprites, self.data)
+        else:
+            self.player = Player((1200,1300),[self.visible_sprites], self.obstacle_sprites, self.data)
         self.visible_sprites.add(self.player)
         
         self.loaded = True

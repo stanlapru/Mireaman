@@ -52,7 +52,22 @@ class Game:
         self.clock = pygame.time.Clock()
         # self.world = World()
         self.platformer_world = PlatformerWorld()
+        
+        self.current_screen = None
+        self.screens = {}
+        # self.initialize_screens()
+        
         self.menu_screen()
+        
+    def initialize_screens(self):
+        self.screens['start'] = StartScreen(self)
+        self.screens['credits'] = CreditsScreen(self)
+        self.screens['world'] = World(self)
+        self.screens['platformer'] = PlatformerWorld(self)
+        self.screens['error'] = ErrorScreen(self)
+        self.screens['loading'] = LoadingScreen(self)
+
+        self.switch_screen('start')
 
         
     def menu_screen(self):
@@ -65,10 +80,21 @@ class Game:
                     running = False
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.MOUSEMOTION:
+                    if main_screen:
+                        main_screen.handle_mouse_motion(event.pos)
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    running = False
-                    self.run()
-            main_screen.update()
+                    # atrocious code here, move on
+                    if main_screen.buttons[0].is_clicked(event.pos):
+                        running = False
+                        self.run(False)
+                    if main_screen.buttons[1].is_clicked(event.pos):
+                        running = False
+                        self.run(True)
+                    if main_screen.buttons[3].is_clicked(event.pos):
+                        running = False
+                        self.credits_screen()
+                    main_screen.handle_mouse_click(event.pos)
             main_screen.draw()
             pygame.display.flip()
             
@@ -103,14 +129,15 @@ class Game:
             pygame.display.flip()
             self.clock.tick(FPS)
             
-    def run(self):
+    def run(self, new):
         running = True
-        world_screen = World(self.savedata)
+        world_screen = World(self.savedata, new)
         while running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    with open('./data/savedata.json', 'w') as store_data: 
-                        json.dump(world_screen.player.data, store_data) 
+                    if new == True:
+                        with open('./data/savedata.json', 'w') as store_data: 
+                            json.dump(world_screen.player.data, store_data) 
                     running = False
                     pygame.quit()
                     sys.exit()
@@ -131,6 +158,10 @@ class Game:
             error_screen.draw()
             pygame.display.flip()
             self.clock.tick(FPS)
+        
+    def switch_screen(self, screen_name):
+        if screen_name in self.screens:
+            self.current_screen = self.screens[screen_name]
             
 if __name__ == "__main__":
     game = Game()
