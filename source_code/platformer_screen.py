@@ -66,8 +66,14 @@ class YSortCamGroup(pygame.sprite.Group):
         self.half_height = self.display.get_size()[1] // 2
         self.offset = pygame.math.Vector2()
         
-        self.floor_surface = pygame.image.load("./resources/tmx/platformer/platformer.png").convert()
+        self.floor_surface = pygame.image.load("./resources/tmx/platformer/platformer.png")
+        #self.scale_background(3)
         self.floor_rect = self.floor_surface.get_rect(topleft = (0,0))
+
+    def scale_background(self, scale_factor):
+        width1, height1 = self.floor_surface.get_size()
+        new_size1 = (int(width1 * scale_factor), int(height1 * scale_factor))
+        self.floor_surface = pygame.transform.scale(self.floor_surface, new_size1)
         
     def custom_draw(self, player):
         self.offset.x = player.rect.centerx - self.half_width

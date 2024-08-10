@@ -21,6 +21,7 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.interacting = False
         self.interact_cd = 200
         self.interact_time = None
+        self.colliding = False
         
         self.obstacle_sprites = obstacle_sprites
         
@@ -56,7 +57,8 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.vertical_vel = -10
+            if self.colliding == True:
+                self.vertical_vel = -3
             # self.status = 'up'
         elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.direction.y = 1
@@ -82,15 +84,21 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.vertical_vel += self.gravity
         self.direction.y = self.vertical_vel
         
-        # normalize
-        if self.direction.x != 0:
-            self.direction.x = self.direction.x / abs(self.direction.x)
+        # # normalize
+        # if self.direction.x != 0:
+        #     self.direction.x = self.direction.x / abs(self.direction.x)
             
         self.hitbox.x += self.direction.x * speed
         self.collision('horizontal')
         self.hitbox.y += self.direction.y * speed
         self.collision('vertical')
         self.rect.center = self.hitbox.center
+
+        if self.colliding == True:
+            self.vertical_vel = 0
+
+        if self.vertical_vel > 5:
+            self.vertical_vel = 5
         
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
@@ -99,6 +107,7 @@ class PlayerPlatformer(pygame.sprite.Sprite):
                 self.interacting = False
         
     def collision(self,direction):
+        self.colliding = False
         if direction == 'horizontal':
             for sprite in self.obstacle_sprites:
                 if sprite.hitbox.colliderect(self.hitbox):
@@ -110,6 +119,7 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         if direction == 'vertical':
             for sprite in self.obstacle_sprites:
                 if sprite.hitbox.colliderect(self.hitbox):
+                    self.colliding = True
                     if self.direction.y < 0: # P up
                         self.hitbox.top = sprite.hitbox.bottom
                     if self.direction.y > 0: # down P

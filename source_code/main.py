@@ -85,13 +85,16 @@ class Game:
                         main_screen.handle_mouse_motion(event.pos)
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     # atrocious code here, move on
-                    if main_screen.buttons[0].is_clicked(event.pos):
+                    # if main_screen.buttons[0].is_clicked(event.pos):
+                    #     running = False
+                    #     self.run(False) # new
+                    if main_screen.buttons[0].is_clicked(event.pos): # new game; platformer selection
                         running = False
-                        self.run(False)
-                    if main_screen.buttons[1].is_clicked(event.pos):
+                        self.platformer_screen()
+                    if main_screen.buttons[1].is_clicked(event.pos): # load existing game
                         running = False
-                        self.run(True)
-                    if main_screen.buttons[3].is_clicked(event.pos):
+                        self.run(True) # load
+                    if main_screen.buttons[3].is_clicked(event.pos): # credits
                         running = False
                         self.credits_screen()
                     main_screen.handle_mouse_click(event.pos)
