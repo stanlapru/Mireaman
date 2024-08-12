@@ -26,6 +26,7 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.falling = False
         
         self.obstacle_sprites = obstacle_sprites
+        self.selected_objects = []
         
     def import_player_assets(self):
         character_path = './resources/textures/player/'
@@ -124,26 +125,21 @@ class PlayerPlatformer(pygame.sprite.Sprite):
                     self.colliding = True
                     if self.direction.y < 0: # P up
                         self.hitbox.top = sprite.hitbox.bottom
+                        # Handle interaction if it's an interactable object
+                        if isinstance(sprite, InteractableObject):
+                            self.handle_interaction(sprite)
                         self.falling = True
                     if self.direction.y > 0: # down P
                         self.hitbox.bottom = sprite.hitbox.top
                         self.falling = False
     
-    def check_interactions(self):
-        for interactable in self.obstacle_sprites:
-            if isinstance(interactable, InteractableObject):
-                selected_object_id = interactable.interact(self)
-                if selected_object_id:
-                    # Add to the list of selected objects
-                    self.selected_objects.append(selected_object_id)
-                    # Display the object at the top of the screen
-                    self.display_selected_objects()
-
-    def display_selected_objects(self):
-        y_offset = 10
-        for idx, obj_id in enumerate(self.selected_objects):
-            object_image = pygame.image.load(f'./resources/textures/blocks/{obj_id}.png').convert_alpha()
-            self.display_surface.blit(object_image, (10 + idx * 50, y_offset))
+    def handle_interaction(self, sprite):
+        object_id = sprite.interact()
+        if object_id and object_id not in self.selected_objects:
+            self.selected_objects.append(object_id)
+        if object_id and object_id in self.selected_objects:
+            self.selected_objects.remove(object_id)
+        
             
     def update(self):
         self.input()
@@ -151,4 +147,4 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.get_status()
         self.animate()
         self.move(self.speed)
-        self.check_interactions()
+        
