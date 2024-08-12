@@ -4,6 +4,7 @@ from support import *
 from tile_platformer import *
 from world import *
 from player_platformer import *
+from interactable import *
 
 #Background color
 BACKGROUND = (20, 20, 20)
@@ -19,6 +20,7 @@ class PlatformerWorld:
         self.display_surface = pygame.display.get_surface()
         self.visible_sprites = YSortCamGroup()
         self.obstacle_sprites = pygame.sprite.Group()
+        self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
         pygame.mixer.music.stop()
         pygame.mixer.music.load("./resources/audio/music/Empty (52 Kilobytes) SNES Cover [4mat] (256 kbps).mp3")
         pygame.mixer.music.play(-1)
@@ -34,6 +36,8 @@ class PlatformerWorld:
             # 'overworld': import_folder('./resources/tmx/platformer/Assets/')
             'overworld': import_folder('./resources/tmx/tsx/Overworld/Overworld.png')
         }
+
+        self.interactable_objects = pygame.sprite.Group()
 
         for style,layout in layouts.items():
             for row_idx,row in enumerate(layout):
@@ -52,6 +56,18 @@ class PlatformerWorld:
         #         if col == 'x':
         #             Tile((x,y),[self.visible_sprites, self.obstacle_sprites])
         #         if col == 'p':
+
+        interacted_image = './resources/textures/blocks/selected.png'
+        # Add interactable objects
+        interactable_data = [
+            {'pos': (300, 1300), 'object_id': 'math', 'initial_image': './resources/textures/blocks/math.png', 'interacted_image': interacted_image},
+            {'pos': (500, 1300), 'object_id': 'english', 'initial_image': './resources/textures/blocks/english.png', 'interacted_image': interacted_image},
+            # Add more objects as needed
+        ]
+
+        for obj_data in interactable_data:
+            InteractableObject(obj_data['pos'], [self.visible_sprites, self.interactable_objects], obj_data['object_id'], obj_data['initial_image'], obj_data['interacted_image'])
+
         self.player = PlayerPlatformer((1200,1300),[self.visible_sprites], self.obstacle_sprites)
     
     def run(self):

@@ -81,10 +81,10 @@ class Game:
         button_hover_color = pygame.Color('yellow')
     
         buttons = [
-        {"text": "Продолжить", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 50, 150, 50), "action": "resume"},
-        {"text": "Настройки", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 120, 150, 50), "action": "options"},
-        {"text": "В главное меню", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 190, 150, 50), "action": "mainmenu"},
-        {"text": "Выйти", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 260, 150, 50), "action": "quit"},
+        {"text": "Продолжить", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 - 20, 150, 50), "action": "resume"},
+        {"text": "Настройки", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 50, 150, 50), "action": "options"},
+        {"text": "В главное меню", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 120, 150, 50), "action": "mainmenu"},
+        {"text": "Выйти", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 190, 150, 50), "action": "quit"},
         ]
         
         while paused:
@@ -92,7 +92,7 @@ class Game:
             self.screen.blit(overlay, (0, 0))
             
             pause_text = titlefont.render("Пауза", True, pygame.Color('white'))
-            self.screen.blit(pause_text, (self.screen.get_width() // 2 - pause_text.get_width() // 2, self.screen.get_height() // 2 - pause_text.get_height() // 2))
+            self.screen.blit(pause_text, (self.screen.get_width() // 2 - pause_text.get_width() // 2, 128 - pause_text.get_height() // 2))
             
             mouse_pos = pygame.mouse.get_pos()
 

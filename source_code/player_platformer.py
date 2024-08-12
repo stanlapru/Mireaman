@@ -1,5 +1,6 @@
 import pygame
 from settings import *
+from interactable import InteractableObject
 from support import import_folder
 
 class PlayerPlatformer(pygame.sprite.Sprite):
@@ -22,6 +23,7 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.interact_cd = 200
         self.interact_time = None
         self.colliding = False
+        self.falling = False
         
         self.obstacle_sprites = obstacle_sprites
         
@@ -57,8 +59,8 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP] or keys[pygame.K_w]:
-            if self.colliding == True:
-                self.vertical_vel = -3
+            if self.colliding == True and self.falling == False:
+                self.vertical_vel = -2.5
             # self.status = 'up'
         elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.direction.y = 1
@@ -122,8 +124,26 @@ class PlayerPlatformer(pygame.sprite.Sprite):
                     self.colliding = True
                     if self.direction.y < 0: # P up
                         self.hitbox.top = sprite.hitbox.bottom
+                        self.falling = True
                     if self.direction.y > 0: # down P
                         self.hitbox.bottom = sprite.hitbox.top
+                        self.falling = False
+    
+    def check_interactions(self):
+        for interactable in self.obstacle_sprites:
+            if isinstance(interactable, InteractableObject):
+                selected_object_id = interactable.interact(self)
+                if selected_object_id:
+                    # Add to the list of selected objects
+                    self.selected_objects.append(selected_object_id)
+                    # Display the object at the top of the screen
+                    self.display_selected_objects()
+
+    def display_selected_objects(self):
+        y_offset = 10
+        for idx, obj_id in enumerate(self.selected_objects):
+            object_image = pygame.image.load(f'./resources/textures/blocks/{obj_id}.png').convert_alpha()
+            self.display_surface.blit(object_image, (10 + idx * 50, y_offset))
             
     def update(self):
         self.input()
@@ -131,3 +151,4 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.get_status()
         self.animate()
         self.move(self.speed)
+        self.check_interactions()
