@@ -40,6 +40,7 @@ class StartScreen:
         ]
 
     def new_game(self):
+        pygame.mixer.music.stop()
         print("Новая игра")
 
     def load_game(self):

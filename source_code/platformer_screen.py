@@ -20,8 +20,8 @@ class PlatformerWorld:
         self.visible_sprites = YSortCamGroup()
         self.obstacle_sprites = pygame.sprite.Group()
         pygame.mixer.music.stop()
-        pygame.mixer.music.load("./resources/audio/music/Kevin MacLeod - Cipher.mp3")
-        pygame.mixer.music.play()
+        pygame.mixer.music.load("./resources/audio/music/Empty (52 Kilobytes) SNES Cover [4mat] (256 kbps).mp3")
+        pygame.mixer.music.play(-1)
         self.create_map()
         
     def create_map(self):
