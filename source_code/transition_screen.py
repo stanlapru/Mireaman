@@ -27,6 +27,5 @@ class PortalScreen:
         text_rect = text_surface.get_rect(center=position)  # Center the text
         self.game.blit(text_surface, text_rect)  # Blit the text onto the screen
 
-
     def update(selfs):
         pass

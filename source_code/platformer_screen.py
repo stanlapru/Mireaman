@@ -16,7 +16,8 @@ SCREEN_HEIGHT = 480
 MAP_COLLISION_LAYER = 1
 
 class PlatformerWorld:
-    def __init__(self):
+    def __init__(self, screen):
+        self.screen = screen
         self.display_surface = pygame.display.get_surface()
         self.visible_sprites = YSortCamGroup()
         self.obstacle_sprites = pygame.sprite.Group()
@@ -79,7 +80,39 @@ class PlatformerWorld:
     
     def run(self):
         self.visible_sprites.custom_draw(self.player)
+        self.draw()
         self.visible_sprites.update()
+
+    def render_text(self, text, position):
+        text_surface = self.font.render(text, True, (255, 255, 255))  # Render the text
+        text_rect = text_surface.get_rect(topleft=position)  # Center the text
+        self.screen.blit(text_surface, text_rect)  # Blit the text onto the screen
+
+    def draw(self):
+        self.render_text("Выбраны:", (8, 8))
+        # Set the starting position for the first box
+        box_start_x = 200  # Start drawing the boxes from this x position
+        box_start_y = 8  # Align with the text
+
+        # Define the size for each box
+        box_size = 48  # Assuming each box is 48x48 pixels
+        spacing = 8  # Space between boxes
+
+        # Draw each selected object's image as a box
+        for object_id in self.player.selected_objects:
+            # Determine the file path for the selected object's image
+            image_path = f'./resources/textures/blocks/{object_id}.png'
+            image = pygame.image.load(image_path).convert_alpha()
+            image = pygame.transform.scale(image, (box_size, box_size))
+
+            # Calculate the position to draw the box
+            position = (box_start_x, box_start_y)
+
+            # Draw the image on the screen at the calculated position
+            self.screen.blit(image, position)
+
+            # Update the x position for the next box
+            box_start_x += box_size + spacing
         
 class YSortCamGroup(pygame.sprite.Group):
     def __init__(self):

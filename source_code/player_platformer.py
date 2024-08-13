@@ -135,10 +135,12 @@ class PlayerPlatformer(pygame.sprite.Sprite):
     
     def handle_interaction(self, sprite):
         object_id = sprite.interact()
-        if object_id and object_id not in self.selected_objects:
+        if object_id not in self.selected_objects:
             self.selected_objects.append(object_id)
-        if object_id and object_id in self.selected_objects:
+            #print('added', object_id)
+        elif object_id in self.selected_objects:
             self.selected_objects.remove(object_id)
+            #print('removed', object_id)
         
             
     def update(self):

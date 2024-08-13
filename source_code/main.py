@@ -13,6 +13,7 @@ from credits_screen import *
 from error_screen import *
 from platformer_screen import *
 from loading_screen import *
+from transition_screen import *
 
 class Game:
     def __init__(self):
@@ -172,7 +173,7 @@ class Game:
             pygame.display.flip()
             
     def platformer_screen(self):
-        platformer_world = PlatformerWorld()
+        platformer_world = PlatformerWorld(self.screen)
         running = True
         while running:
             for event in pygame.event.get():
@@ -185,6 +186,20 @@ class Game:
                     sys.exit()
             self.screen.fill('#1E7CB7')
             platformer_world.run()
+            pygame.display.update()
+            self.clock.tick(FPS)
+
+    def portal_screen(self):
+        portal_scr = PortalScreen()
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                    sys.exit()
+            self.screen.fill('#1E7CB7')
+            portal_scr.run()
             pygame.display.update()
             self.clock.tick(FPS)
             
