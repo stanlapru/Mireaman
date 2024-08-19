@@ -78,7 +78,7 @@ class PlatformerWorld:
             InteractableObject(obj_data['pos'], [self.visible_sprites], self.obstacle_sprites, obj_data['object_id'], obj_data['initial_image'], obj_data['interacted_image'])
 
         self.player = PlayerPlatformer((1200,1300),[self.visible_sprites], self.obstacle_sprites)
-        self.portal = Portal((2500, 1500), [self.visible_sprites, self.obstacle_sprites], self.player)
+        self.portal = Portal((4400, 1460), [self.visible_sprites, self.obstacle_sprites], self.player)
     
     def run(self):
         self.visible_sprites.custom_draw(self.player)
