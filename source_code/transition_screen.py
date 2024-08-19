@@ -2,30 +2,47 @@ import pygame
 from button import Button
 
 class PortalScreen:
-    def __init__(self, game: pygame.Surface):
-        self.game = game
-        pygame.font.init()
-        self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
-        pygame.mixer.music.stop()
-        pygame.mixer.music.load("./resources/audio/music/Empty (52 Kilobytes) SNES Cover [4mat] (256 kbps).mp3")
-        pygame.mixer.music.play()
+    def __init__(self, screen):
+        self.screen = screen
+        self.start_time = pygame.time.get_ticks()  # Start time for the transition
+        self.duration = 6000  # Duration of the transition in milliseconds (3 seconds)
+        self.start_color = pygame.Color('maroon')
+        self.end_color = pygame.Color('#2E2E2E')  # Darker tint
+        self.sprites = pygame.sprite.Group()
+        self.done = False
+        self.setup_sprites()
 
-    def handle_mouse_click(self, pos: tuple[int, int]):
-        # Check if the click is within a certain region on the screen
-        # If yes, switch to the second screen
-        if 100 < pos[0] < 200 and 100 < pos[1] < 200:
-            pygame.mixer.music.stop()
-            self.game.switch_screen(self.game.second_screen)
+    def setup_sprites(self):
+        sprite1 = pygame.sprite.Sprite()
+        sprite1.image = pygame.image.load('./resources/textures/portal/line-long.png').convert_alpha()
+        sprite1.rect = sprite1.image.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() // 2))
+        self.sprites.add(sprite1)
 
-    def draw(self):
-        self.game.fill((128, 128, 255))  # Clear the screen
-        self.render_text("Моя Игра №12 - ПД:ЦО", (self.game.get_width() // 2, self.game.get_height() // 2))
-        self.render_text("Нажмите чтобы начать!", (self.game.get_width() // 2, self.game.get_height() // 2 + 40))
+        sprite2 = pygame.sprite.Sprite()
+        sprite2.image = pygame.image.load('./resources/textures/portal/line-short.png').convert_alpha()
+        sprite2.rect = sprite2.image.get_rect(center=(self.screen.get_width() // 2, self.screen.get_height() // 3))
+        self.sprites.add(sprite2)
 
-    def render_text(self, text, position):
-        text_surface = self.font.render(text, True, (255, 255, 255))  # Render the text
-        text_rect = text_surface.get_rect(center=position)  # Center the text
-        self.game.blit(text_surface, text_rect)  # Blit the text onto the screen
+    def interpolate_color(self, start_color, end_color, factor):
+        # Linear interpolation of color
+        return (
+            start_color.r + (end_color.r - start_color.r) * factor,
+            start_color.g + (end_color.g - start_color.g) * factor,
+            start_color.b + (end_color.b - start_color.b) * factor,
+        )
 
-    def update(selfs):
-        pass
+    def run(self):
+        current_time = pygame.time.get_ticks()
+        elapsed_time = current_time - self.start_time
+        factor = min(elapsed_time / self.duration, 1)  # Ensure factor stays between 0 and 1
+
+        # Interpolate between the start and end colors based on the elapsed time
+        current_color = self.interpolate_color(self.start_color, self.end_color, factor)
+        self.screen.fill(current_color)
+
+        # Draw sprites
+        self.sprites.draw(self.screen)
+
+        # Transition to the next screen after the duration
+        if elapsed_time >= self.duration:
+            self.done = True

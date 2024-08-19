@@ -184,13 +184,16 @@ class Game:
                     running = False
                     pygame.quit()
                     sys.exit()
+            if platformer_world.portal.touched == True:
+                platformer_world.portal.save_selected_subjects()
+                self.portal_screen()
             self.screen.fill('#1E7CB7')
             platformer_world.run()
             pygame.display.update()
             self.clock.tick(FPS)
 
     def portal_screen(self):
-        portal_scr = PortalScreen()
+        portal_scr = PortalScreen(self.screen)
         running = True
         while running:
             for event in pygame.event.get():
@@ -198,7 +201,8 @@ class Game:
                     running = False
                     pygame.quit()
                     sys.exit()
-            self.screen.fill('#1E7CB7')
+            if portal_scr.done == True:
+                self.run(False)      
             portal_scr.run()
             pygame.display.update()
             self.clock.tick(FPS)

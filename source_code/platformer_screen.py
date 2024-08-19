@@ -5,6 +5,7 @@ from tile_platformer import *
 from world import *
 from player_platformer import *
 from interactable import *
+from portal import *
 
 #Background color
 BACKGROUND = (20, 20, 20)
@@ -77,6 +78,7 @@ class PlatformerWorld:
             InteractableObject(obj_data['pos'], [self.visible_sprites], self.obstacle_sprites, obj_data['object_id'], obj_data['initial_image'], obj_data['interacted_image'])
 
         self.player = PlayerPlatformer((1200,1300),[self.visible_sprites], self.obstacle_sprites)
+        self.portal = Portal((2500, 1500), [self.visible_sprites, self.obstacle_sprites], self.player)
     
     def run(self):
         self.visible_sprites.custom_draw(self.player)
@@ -84,34 +86,22 @@ class PlatformerWorld:
         self.visible_sprites.update()
 
     def render_text(self, text, position):
-        text_surface = self.font.render(text, True, (255, 255, 255))  # Render the text
-        text_rect = text_surface.get_rect(topleft=position)  # Center the text
-        self.screen.blit(text_surface, text_rect)  # Blit the text onto the screen
+        text_surface = self.font.render(text, True, (255, 255, 255))
+        text_rect = text_surface.get_rect(topleft=position)
+        self.screen.blit(text_surface, text_rect)
 
     def draw(self):
         self.render_text("Выбраны:", (8, 8))
-        # Set the starting position for the first box
-        box_start_x = 200  # Start drawing the boxes from this x position
-        box_start_y = 8  # Align with the text
-
-        # Define the size for each box
-        box_size = 48  # Assuming each box is 48x48 pixels
-        spacing = 8  # Space between boxes
-
-        # Draw each selected object's image as a box
+        box_start_x = 200
+        box_start_y = 8
+        box_size = 48
+        spacing = 8
         for object_id in self.player.selected_objects:
-            # Determine the file path for the selected object's image
             image_path = f'./resources/textures/blocks/{object_id}.png'
             image = pygame.image.load(image_path).convert_alpha()
             image = pygame.transform.scale(image, (box_size, box_size))
-
-            # Calculate the position to draw the box
             position = (box_start_x, box_start_y)
-
-            # Draw the image on the screen at the calculated position
             self.screen.blit(image, position)
-
-            # Update the x position for the next box
             box_start_x += box_size + spacing
         
 class YSortCamGroup(pygame.sprite.Group):
@@ -121,7 +111,6 @@ class YSortCamGroup(pygame.sprite.Group):
         self.half_width = self.display.get_size()[0] // 2
         self.half_height = self.display.get_size()[1] // 2
         self.offset = pygame.math.Vector2()
-        
         self.floor_surface = pygame.image.load("./resources/tmx/platformer/platformer.png")
         #self.scale_background(3)
         self.floor_rect = self.floor_surface.get_rect(topleft = (0,0))
