@@ -36,12 +36,10 @@ class ICTone:
             self.draw_text(str(bit), (box_x, box_y), color)
 
     def reset_game(self):
-        global current_decimal, binary_boxes, message, message_color, selected_box
-        current_decimal = random.randint(0, 0x11111111)
-        binary_boxes = [0] * 8
-        message = ""
-        message_color = (0,255,0)
-        selected_box = None
+        self.current_decimal = random.randint(0, 255)
+        self.binary_boxes = [0] * 8
+        
+        self.selected_box = None
 
     def check_answer(self):
         global score, message, message_color
