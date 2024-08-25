@@ -17,11 +17,18 @@ class Player(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2()
         self.speed = 5
         self.interacting = False
+        self.dialog_active = False
         self.interact_cd = 200
         self.interact_time = None
         
         self.obstacle_sprites = obstacle_sprites
         self.data = data
+
+        # Load arrow image
+        #self.arrow_image = pygame.image.load('./resources/textures/player/arrow.jpg').convert_alpha()
+        #self.arrow_rect = self.arrow_image.get_rect(center=self.rect.center)
+        self.arrow_visible = False  # Flag to indicate if arrow should be displayed
+
         
     def import_player_assets(self):
         character_path = './resources/textures/player/'
@@ -52,6 +59,11 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center = self.hitbox.center)
     
     def input(self):
+        if self.dialog_active:  # Block input when dialog is active
+            self.direction.x = 0
+            self.direction.y = 0
+            return
+        
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP] or keys[pygame.K_w]:
@@ -76,6 +88,8 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_e] and not self.interacting:
             self.interacting = True
             self.interact_time = pygame.time.get_ticks()
+        # elif not keys[pygame.K_e]:
+        #     self.interacting = False
             
     def move(self,speed):
         if self.direction.magnitude() != 0:
@@ -118,3 +132,41 @@ class Player(pygame.sprite.Sprite):
         self.get_status()
         self.animate()
         self.move(self.speed)
+        # self.check_visibility()
+
+    def check_visibility(self):
+        """Check if the player is behind an obstacle and show arrow if true."""
+        self.arrow_visible = False
+
+        for sprite in self.obstacle_sprites:
+            if sprite.hitbox.colliderect(self.rect):
+                self.arrow_visible = True
+                break
+
+        # if self.arrow_visible:
+        #     self.update_arrow_position()
+
+    # def update_arrow_position(self):
+    #     """Update arrow position based on player's position."""
+    #     display_rect = self.display.get_rect()
+
+    #     if self.rect.centerx < display_rect.left:
+    #         self.arrow_rect.centerx = display_rect.left + self.arrow_rect.width // 2
+    #     elif self.rect.centerx > display_rect.right:
+    #         self.arrow_rect.centerx = display_rect.right - self.arrow_rect.width // 2
+    #     else:
+    #         self.arrow_rect.centerx = self.rect.centerx
+
+    #     if self.rect.centery < display_rect.top:
+    #         self.arrow_rect.centery = display_rect.top + self.arrow_rect.height // 2
+    #     elif self.rect.centery > display_rect.bottom:
+    #         self.arrow_rect.centery = display_rect.bottom - self.arrow_rect.height // 2
+    #     else:
+    #         self.arrow_rect.centery = self.rect.centery
+
+    def draw(self, surface):
+        """Draw player or arrow based on visibility."""
+        if self.arrow_visible:
+            surface.blit(self.arrow_image, self.arrow_rect)
+        else:
+            surface.blit(self.image, self.rect)

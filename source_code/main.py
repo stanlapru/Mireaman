@@ -14,6 +14,7 @@ from error_screen import *
 from platformer_screen import *
 from loading_screen import *
 from transition_screen import *
+from problems.ict.ict1 import ICTone
 
 class Game:
     def __init__(self):
@@ -240,8 +241,53 @@ class Game:
                     running = False
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN and world_screen.player.dialog_active:  # Advance dialog
+                    world_screen.dialog1.advance()
+            player = world_screen.player
+            if player.interacting and not player.dialog_active:
+                if 750 < player.rect.x < 850 and 750 < player.rect.y < 850:  # Check proximity to NPC
+                    player.dialog_active = True
+                    world_screen.dialog1.started = True
+                    world_screen.dialog1.finished = False
+                    world_screen.dialog1.current_line = 0  # Reset dialog
+                    world_screen.dialog1.next_line()
+            
+            if world_screen.dialog1.finished == False:
+                world_screen.dialog1.display()
+            
+            if world_screen.dialog1.finished and world_screen.dialog1.started:
+                world_screen.dialog1.current_line = 0
+                player.dialog_active = False
+                self.ict1()
             self.screen.fill('#1E7CB7')
             world_screen.run()
+            pygame.display.update()
+            self.clock.tick(FPS)
+
+    def ict1(self):
+        running = True
+        task_screen = ICTone(self.screen)
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.pause_screen()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    x, y = event.pos
+                    if 400 <= x <= 400 + 8 * (36 + 10) and 250 <= y <= 250 + 36:
+                        selected = (x - 400) // (36 + 10)
+                        task_screen.binary_boxes[selected] = 1 if task_screen.binary_boxes[selected] == 0 else 0
+                    if 325 <= x <= 325 + 150 and 450 <= y <= 450 + 50:
+                        task_screen.check_answer()
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                    sys.exit()
+            if task_screen.score == 10:
+                running = False
+                self.run(False)
+            self.screen.fill('#000000')
+            task_screen.draw()
             pygame.display.update()
             self.clock.tick(FPS)
     

@@ -4,6 +4,8 @@ from support import *
 from tile import *
 from world import *
 from player import *
+from npc import *
+from dialog_box import *
 
 class World:
     def __init__(self, data, new):
@@ -19,6 +21,8 @@ class World:
         pygame.mixer.music.play()
         self.create_map()
         self.loaded = False
+
+        self.dialog1 = DialogBox(self.display_surface, ['Привет, мне очень нужна помощь с компьютером!', "Он как-то сбоит и просит перевести числа в двоичную систему счисления...", "И ты мне с этим поможешь, потому что выбор для отказа ещё не добавлен в игру. :)"])
         
     def load_tileset(self, path, tile_size, scale_factor=3):
         tileset_image = pygame.image.load(path).convert_alpha()  # Load the tileset
@@ -81,16 +85,21 @@ class World:
         if self.load_save == True:
             self.player = Player((self.data['pos_x'],self.data['pos_y']),[self.visible_sprites], self.obstacle_sprites, self.data)
         else:
-            self.player = Player((1200,1300),[self.visible_sprites], self.obstacle_sprites, self.data)
-        self.visible_sprites.add(self.player)
+            self.player = Player(
+            (1200, 1300),
+            [self.visible_sprites],
+            self.obstacle_sprites,
+            self.data
+        )
+        
+        self.npc = NPC((800,800),[self.visible_sprites], self.obstacle_sprites, self.data)
+        self.visible_sprites.add(self.player, self.npc)
         
         self.loaded = True
 
     def run(self):
-        self.visible_sprites.custom_draw(self.player)
+        self.visible_sprites.custom_draw(self.player, self.foreground_sprites, self.foreground_sprites_2)
         self.visible_sprites.update()
-        self.foreground_sprites.custdraw(self.player)
-        self.foreground_sprites_2.custdraw(self.player)
         
 class YSortCamGroup(pygame.sprite.Group):
     def __init__(self):
@@ -101,36 +110,25 @@ class YSortCamGroup(pygame.sprite.Group):
         self.offset = pygame.math.Vector2()
         
         self.floor_surface = pygame.image.load("./resources/textures/environment/world_big.png").convert()
-        self.floor_rect = self.floor_surface.get_rect(topleft = (0,0))
+        self.floor_rect = self.floor_surface.get_rect(topleft=(0, 0))
         
-        self.visible_sprites = pygame.sprite.Group()
-        
-        
-    def custom_draw(self, player):
+    def custom_draw(self, player, foreground_sprites, foreground_sprites_2):
         self.offset.x = player.rect.centerx - self.half_width
         self.offset.y = player.rect.centery - self.half_height
         
         floor_offset_pos = self.floor_rect.topleft - self.offset
         self.display.blit(self.floor_surface, floor_offset_pos)
         
-        # player
-        for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display.blit(sprite.image, offset_pos)
-            
-        # visibles
-        for sprite in sorted(self.visible_sprites, key=lambda sprite: sprite.rect.centery):
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display.blit(sprite.image, offset_pos)
-            
-        # Draw foreground layers
-        # for sprite in sorted(self.foreground_sprites, key=lambda sprite: sprite.rect.centery):
-        #     offset_pos = sprite.rect.topleft - self.offset
-        #     self.display.blit(sprite.image, offset_pos)
+        # Объединяем все спрайты для сортировки и отрисовки
+        all_sprites = sorted(
+            self.sprites() + foreground_sprites.sprites() + foreground_sprites_2.sprites(),
+            key=lambda sprite: sprite.rect.centery
+        )
         
-        # for sprite in sorted(self.foreground_sprites_2, key=lambda sprite: sprite.rect.centery):
-        #     offset_pos = sprite.rect.topleft - self.offset
-        #     self.display.blit(sprite.image, offset_pos)
+        for sprite in all_sprites:
+            offset_pos = sprite.rect.topleft - self.offset
+            self.display.blit(sprite.image, offset_pos)
+
 
 class ForegroundGroup(pygame.sprite.Group):
     def __init__(self):
