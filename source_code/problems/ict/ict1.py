@@ -1,8 +1,5 @@
 import pygame
 import random
-import time
-import struct
-import moderngl
 
 class ICTone:
     def __init__(self,screen):
@@ -42,7 +39,6 @@ class ICTone:
         self.selected_box = None
 
     def check_answer(self):
-        global score, message, message_color
         user_binary_str = ''.join(map(str, self.binary_boxes))
         correct_binary_str = self.decimal_to_binary(self.current_decimal, 8)
         
@@ -83,13 +79,16 @@ class ICTone:
 
     def draw(self):
         self.screen.fill((0,0,0))
-    
+
+        self.draw_text(f"Переведите данное число в двоичную систему счисления.", (50, 150))  
+        self.draw_text(f"Нажмите цифру, чтобы помять её на 0 или 1.", (50, 200))        
+        
         # Draw the current decimal number
-        self.draw_text(f"Число: {self.current_decimal}", (50, 150))
+        self.draw_text(f"Число: {self.current_decimal}", (50, 100))
         
         # Draw the binary boxes
-        self.draw_text("0b", (350, 250))
-        self.draw_binary_boxes(self.binary_boxes, (400, 250))
+        self.draw_text("0b", (350, 350))
+        self.draw_binary_boxes(self.binary_boxes, (400, 350))
         
         # Draw the check button
         pygame.draw.rect(self.crt_surface, (0,255,0), (325, 450, 150, 50))

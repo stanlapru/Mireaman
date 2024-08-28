@@ -1,19 +1,15 @@
 # LAUNCH THIS
 import pygame
-import pygame_gui
-import subprocess
-import threading
 import sys
-import threading
 import json
 from settings import *
-from world import *
-from start_screen import *
-from credits_screen import *
-from error_screen import *
-from platformer_screen import *
-from loading_screen import *
-from transition_screen import *
+from world import World
+from start_screen import StartScreen
+from credits_screen import CreditsScreen
+from error_screen import ErrorScreen
+from platformer_screen import PlatformerWorld
+#from loading_screen import LoadingScreen
+from transition_screen import PortalScreen
 from problems.ict.ict1 import ICTone
 
 class Game:
@@ -33,14 +29,14 @@ class Game:
             # the file already exists 
             with open('./data/savedata.json') as load_file: 
                 self.savedata = json.load(load_file) 
-        except: 
+        except FileNotFoundError: 
             # create the file and store initial values 
             with open('./data/savedata.json', 'w') as store_file: 
                 json.dump(self.savedata, store_file) 
         
         pygame.init()
         pygame.mixer.init()
-        display_info = pygame.display.Info()
+        # display_info = pygame.display.Info()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Мир грифонов")
         
@@ -52,24 +48,13 @@ class Game:
         pygame.mouse.set_cursor(cursor)
         
         self.clock = pygame.time.Clock()
-        # self.world = World()
         
         self.current_screen = None
         self.screens = {}
-        # self.initialize_screens()
         
         self.menu_screen()
-        
-    def initialize_screens(self):
-        self.screens['start'] = StartScreen(self)
-        self.screens['credits'] = CreditsScreen(self)
-        self.screens['world'] = World(self)
-        self.screens['platformer'] = PlatformerWorld(self)
-        self.screens['error'] = ErrorScreen(self)
-        self.screens['loading'] = LoadingScreen(self)
 
-        self.switch_screen('start')
-
+    # Пауза
     def pause_screen(self):
         paused = True
         overlay = pygame.Surface(self.screen.get_size())
@@ -136,7 +121,7 @@ class Game:
             pygame.display.flip()
             #self.clock.tick(10)  # Slow down the loop for the pause screen
 
-        
+    # Главное меню
     def menu_screen(self):
         running = True
         main_screen = StartScreen(self.screen)
@@ -173,6 +158,7 @@ class Game:
             main_screen.draw()
             pygame.display.flip()
             
+    # Экран платформера
     def platformer_screen(self):
         platformer_world = PlatformerWorld(self.screen)
         running = True
@@ -193,6 +179,7 @@ class Game:
             pygame.display.update()
             self.clock.tick(FPS)
 
+    # Экран с порталом после выбора предметов
     def portal_screen(self):
         portal_scr = PortalScreen(self.screen)
         running = True
@@ -207,7 +194,8 @@ class Game:
             portal_scr.run()
             pygame.display.update()
             self.clock.tick(FPS)
-            
+    
+    # Титры
     def credits_screen(self):
         running = True
         credits_screen = CreditsScreen(self.screen)
@@ -225,7 +213,8 @@ class Game:
                 self.menu_screen()
             pygame.display.flip()
             self.clock.tick(FPS)
-            
+    
+    # Экран с миром
     def run(self, new):
         running = True
         world_screen = World(self.savedata, new)
@@ -300,6 +289,9 @@ class Game:
                     running = False
                     pygame.quit()
                     sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    running = False
+                    self.menu_screen()
             error_screen.draw()
             pygame.display.flip()
             self.clock.tick(FPS)
@@ -307,6 +299,9 @@ class Game:
     def switch_screen(self, screen_name):
         if screen_name in self.screens:
             self.current_screen = self.screens[screen_name]
+        else:
+            game.error('Call to nonexistent screen.')
+            
             
 if __name__ == "__main__":
     game = Game()

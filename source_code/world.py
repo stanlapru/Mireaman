@@ -141,7 +141,7 @@ class ForegroundGroup(pygame.sprite.Group):
         self.foreground_sprites = pygame.sprite.Group()
         self.foreground_sprites_2 = pygame.sprite.Group()
     
-    def custdraw(self, player):
+    def custom_draw(self, player):
         self.offset.x = player.rect.centerx - self.half_width
         self.offset.y = player.rect.centery - self.half_height
         
