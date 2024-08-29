@@ -1,6 +1,5 @@
 import pygame
 import json
-import time
 
 class Portal(pygame.sprite.Sprite):
     def __init__(self, pos, groups, player):

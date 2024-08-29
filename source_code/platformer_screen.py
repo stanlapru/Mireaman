@@ -1,11 +1,10 @@
-import pygame, pytmx, pygame_gui
+import pygame
 from settings import *
 from support import *
-from tile_platformer import *
-from world import *
-from player_platformer import *
-from interactable import *
-from portal import *
+from tile_platformer import TilePlatformer
+from player_platformer import PlayerPlatformer
+from interactable import InteractableObject
+from portal import Portal
 
 #Background color
 BACKGROUND = (20, 20, 20)

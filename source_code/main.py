@@ -37,7 +37,7 @@ class Game:
         pygame.init()
         pygame.mixer.init()
         # display_info = pygame.display.Info()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
         pygame.display.set_caption("Мир грифонов")
         
         # Custom cursor

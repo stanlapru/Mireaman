@@ -1,7 +1,6 @@
 import pygame
 import random
 import math
-from button import Button
 
 class PortalScreen:
     def __init__(self, screen):

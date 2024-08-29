@@ -15,6 +15,7 @@ class ICTone:
         self.crt_surface = pygame.Surface((1280, 720))
         pygame.mixer.music.stop()
         pygame.mixer.music.load("./resources/audio/music/минута-на-размышление.mp3")
+        pygame.mixer.music.set_volume(0.5)
         pygame.mixer.music.play(-1)
     
     def decimal_to_binary(self,decimal, length):
@@ -25,7 +26,6 @@ class ICTone:
         self.screen.blit(text_surface, position)
 
     def draw_binary_boxes(self,binary_list, position):
-        global selected_box
         for i, bit in enumerate(binary_list):
             box_x = position[0] + i * (36 + 10)
             box_y = position[1]
@@ -58,24 +58,24 @@ class ICTone:
         pygame.display.flip()
         self.reset_game()
 
-    def apply_crt_effect(surface):
-        # Apply scanlines
-        for y in range(0, 720, 4):
-            pygame.draw.line(surface, (0, 0, 0), (0, y), (1280, y), 1)
+    # def apply_crt_effect(surface):
+    #     # Apply scanlines
+    #     for y in range(0, 720, 4):
+    #         pygame.draw.line(surface, (0, 0, 0), (0, y), (1280, y), 1)
         
-        # Apply curvature (simple pin-cushion distortion)
-        new_surface = pygame.transform.scale(surface, (1280 + 20, 720 + 20))
-        new_surface = pygame.transform.smoothscale(new_surface, (1280, 720))
+    #     # Apply curvature (simple pin-cushion distortion)
+    #     new_surface = pygame.transform.scale(surface, (1280 + 20, 720 + 20))
+    #     new_surface = pygame.transform.smoothscale(new_surface, (1280, 720))
 
-        # Apply noise
-        noise = pygame.Surface((1280, 720))
-        noise.lock()
-        for x in range(1280):
-            for y in range(720):
-                color = random.randint(0, 30)
-                noise.set_at((x, y), (color, color, color))
-        noise.unlock()
-        surface.blit(noise, (0, 0), special_flags=pygame.BLEND_ADD)
+    #     # Apply noise
+    #     noise = pygame.Surface((1280, 720))
+    #     noise.lock()
+    #     for x in range(1280):
+    #         for y in range(720):
+    #             color = random.randint(0, 30)
+    #             noise.set_at((x, y), (color, color, color))
+    #     noise.unlock()
+    #     surface.blit(noise, (0, 0), special_flags=pygame.BLEND_ADD)
 
     def draw(self):
         self.screen.fill((0,0,0))
@@ -96,5 +96,5 @@ class ICTone:
 
         # Draw the score and message
         self.draw_text(f"Счёт: {self.score}", (50, 50))
-        self.draw_text(self.message, (325, 350), self.message_color)
+        self.draw_text(self.message, (325, 550), self.message_color)
     

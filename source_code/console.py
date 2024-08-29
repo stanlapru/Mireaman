@@ -1,11 +1,7 @@
-import time
-
 import pygame
 import pygame_gui
-
 import subprocess
 import threading
-import os
 
 
 class Output:
