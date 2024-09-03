@@ -216,42 +216,8 @@ class Game:
     
     # Экран с миром
     def run(self, new):
-        running = True
-        world_screen = World(self.savedata, new)
-        while running:
-            for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self.pause_screen()
-                if event.type == pygame.QUIT:
-                    if new == True:
-                        with open('./data/savedata.json', 'w') as store_data: 
-                            json.dump(world_screen.player.data, store_data) 
-                    running = False
-                    pygame.quit()
-                    sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN and world_screen.player.dialog_active:  # Advance dialog
-                    world_screen.dialog1.advance()
-            player = world_screen.player
-            if player.interacting and not player.dialog_active:
-                if 750 < player.rect.x < 850 and 750 < player.rect.y < 850:  # Check proximity to NPC
-                    player.dialog_active = True
-                    world_screen.dialog1.started = True
-                    world_screen.dialog1.finished = False
-                    world_screen.dialog1.current_line = 0  # Reset dialog
-                    world_screen.dialog1.next_line()
-            
-            if world_screen.dialog1.finished == False:
-                world_screen.dialog1.display()
-            
-            if world_screen.dialog1.finished and world_screen.dialog1.started:
-                world_screen.dialog1.current_line = 0
-                player.dialog_active = False
-                self.ict1()
-            self.screen.fill('#1E7CB7')
-            world_screen.run()
-            pygame.display.update()
-            self.clock.tick(FPS)
+        world = World(self.savedata, new)
+        world.run()
 
     def ict1(self):
         running = True
