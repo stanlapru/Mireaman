@@ -1,4 +1,4 @@
-import pygame, pytmx, json, sys
+import pygame, pytmx, json, sys, pyscroll
 from support import *
 from tile import *
 from world import *
@@ -10,13 +10,8 @@ from animated_tile import AnimatedTile
 class World:
     def __init__(self, data, new):
         self.display_surface = pygame.display.get_surface()
-        self.visible_sprites = YSortCamGroup()
-        self.obstacle_sprites = YSortCamGroup()
-        self.foreground_sprites = ForegroundGroup()
-        self.foreground_sprites_2 = ForegroundGroup()
         self.load_save = new
         self.clock = pygame.time.Clock()
-        
         self.data = data
         pygame.mixer.music.load("./resources/audio/music/Kevin MacLeod - Cipher.mp3")
         pygame.mixer.music.play()
@@ -45,24 +40,11 @@ class World:
         
     def create_map(self):
         self.tmx_data = pytmx.util_pygame.load_pygame('./resources/tmx/tsx/map.tmx')
-        for layer in self.tmx_data.visible_layers:
-            if isinstance(layer, pytmx.TiledTileLayer):
-                for x, y, gid in layer:
-                    try:
-                        tile = pygame.transform.scale_by(self.tmx_data.get_tile_image_by_gid(gid),3)
-                    except:
-                        tile = self.tmx_data.get_tile_image_by_gid(gid)
-                    if tile:
-                        position = (x * TILESIZE, y * TILESIZE)
-                        if gid in self.tmx_data.tile_properties:
-                            props = self.tmx_data.tile_properties[gid]
-                            if 'animation' in props:
-                                frames = props['animation']
-                                tile_surface = AnimatedTile(position, [self.visible_sprites], frames)
-                            else:
-                                tile_surface = Tile(position, [self.visible_sprites], tile)
-                        else:
-                            tile_surface = Tile(position, [self.visible_sprites], tile)
+        map_layer = pyscroll.BufferedRenderer(
+        data = pyscroll.TiledMapData(self.tmx_data),
+        size=(3000,3000),)
+        
+        
         if self.load_save == True:
             self.player = Player((self.data['pos_x'],self.data['pos_y']),[self.visible_sprites], self.obstacle_sprites, self.data)
         else:
@@ -72,6 +54,10 @@ class World:
             self.obstacle_sprites,
             self.data
         )
+            
+        # make the pygame SpriteGroup with a scrolling map
+        self.map_group = pyscroll.PyscrollGroup(map_layer=map_layer)
+        
         
     def run(self):
         running = True
@@ -82,7 +68,7 @@ class World:
                     if event.key == pygame.K_ESCAPE:
                         self.pause_screen()
                 if event.type == pygame.QUIT:
-                    if self.new:
+                    if self.load_save:
                         with open('./data/savedata.json', 'w') as store_data: 
                             json.dump(self.player.data, store_data) 
                     running = False
@@ -90,30 +76,15 @@ class World:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN and self.player.dialog_active:  # Advance dialog
                     self.dialog1.advance()
-            # if player.interacting and not player.dialog_active:
-            #     if 750 < player.rect.x < 850 and 750 < player.rect.y < 850:  # Check proximity to NPC
-            #         player.dialog_active = True
-            #         self.dialog1.started = True
-            #         self.dialog1.finished = False
-            #         self.dialog1.current_line = 0  # Reset dialog
-            #         self.dialog1.next_line()
-            
-            # if not self.dialog1.finished:
-            #     self.dialog1.display()
-            
-            # if self.dialog1.finished and self.dialog1.started:
-            #     self.dialog1.current_line = 0
-            #     player.dialog_active = False
-            #     self.ict1()  # Assuming `ict1` is another method in `World`
             self.display_surface.fill('#1E7CB7')
             self.run_world()  # Call the method that updates and draws the world
             pygame.display.update()
             self.clock.tick(60)  # Ensure the game runs at the correct FPS
 
     def run_world(self):
+        self.map_group.draw(self.display_surface)
         self.visible_sprites.update()
         self.visible_sprites.custom_draw(self.player, self.foreground_sprites, self.foreground_sprites_2)
-        
 
         
         self.loaded = True
@@ -184,55 +155,3 @@ class World:
                     
             pygame.display.flip()
             #self.clock.tick(10)  # Slow down the loop for the pause screen
-        
-class YSortCamGroup(pygame.sprite.Group):
-    def __init__(self):
-        super().__init__()
-        self.display = pygame.display.get_surface()
-        self.half_width = self.display.get_size()[0] // 2
-        self.half_height = self.display.get_size()[1] // 2
-        self.offset = pygame.math.Vector2()
-        
-        self.floor_surface = pygame.image.load("./resources/textures/environment/world_big.png").convert()
-        self.floor_rect = self.floor_surface.get_rect(topleft=(0, 0))
-        
-    def custom_draw(self, player, foreground_sprites, foreground_sprites_2):
-        self.offset.x = player.rect.centerx - self.half_width
-        self.offset.y = player.rect.centery - self.half_height
-        
-        #floor_offset_pos = self.floor_rect.topleft - self.offset
-        #self.display.blit(self.floor_surface, floor_offset_pos)
-        
-        # Объединяем все спрайты для сортировки и отрисовки
-        all_sprites = sorted(
-            self.sprites() + foreground_sprites.sprites() + foreground_sprites_2.sprites(),
-            key=lambda sprite: sprite.rect.centery
-        )
-        
-        for sprite in all_sprites:
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display.blit(sprite.image, offset_pos)
-
-
-class ForegroundGroup(pygame.sprite.Group):
-    def __init__(self):
-        super().__init__()
-        self.display = pygame.display.get_surface()
-        self.half_width = self.display.get_size()[0] // 2
-        self.half_height = self.display.get_size()[1] // 2
-        self.offset = pygame.math.Vector2()
-        
-        self.foreground_sprites = pygame.sprite.Group()
-        self.foreground_sprites_2 = pygame.sprite.Group()
-    
-    def custom_draw(self, player):
-        self.offset.x = player.rect.centerx - self.half_width
-        self.offset.y = player.rect.centery - self.half_height
-        
-        for sprite in sorted(self.foreground_sprites, key=lambda sprite: sprite.rect.centery):
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display.blit(sprite.image, offset_pos)
-        
-        for sprite in sorted(self.foreground_sprites_2, key=lambda sprite: sprite.rect.centery):
-            offset_pos = sprite.rect.topleft - self.offset
-            self.display.blit(sprite.image, offset_pos)
