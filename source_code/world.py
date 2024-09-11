@@ -39,30 +39,46 @@ class World:
         return tiles
         
     def create_map(self):
+        # Load the Tiled map
         self.tmx_data = pytmx.util_pygame.load_pygame('./resources/tmx/tsx/map.tmx')
-        map_layer = pyscroll.BufferedRenderer(
-        data = pyscroll.TiledMapData(self.tmx_data),
-        size=(3000,3000),)
         
-        
+        # Create the map data and renderer
+        map_data = pyscroll.TiledMapData(self.tmx_data)
+        map_layer = pyscroll.BufferedRenderer(map_data, self.display_surface.get_size())
+        map_layer.zoom = 3
+
+        # Create the Pyscroll group
+        self.map_group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4)
+
+        self.obstacle_sprites = pygame.sprite.Group()
+
+        collision_layer = self.tmx_data.get_layer_by_name('collision')
+        for x, y, gid in collision_layer:
+            if gid != 0:  # gid 0 means no tile
+                tile = self.tmx_data.get_tile_image_by_gid(gid)
+                if tile:  # If there's a tile (i.e., a filled tile, not empty)
+                    obstacle = pygame.sprite.Sprite(self.obstacle_sprites)
+                    obstacle.rect = pygame.Rect(x * self.tmx_data.tilewidth, 
+                                                y * self.tmx_data.tileheight, 
+                                                self.tmx_data.tilewidth, 
+                                                self.tmx_data.tileheight)
+
+        # Initialize player position
         if self.load_save == True:
-            self.player = Player((self.data['pos_x'],self.data['pos_y']),[self.visible_sprites], self.obstacle_sprites, self.data)
+            player_position = (self.data['pos_x'], self.data['pos_y'])
         else:
-            self.player = Player(
-            (1200, 1300),
-            [self.visible_sprites],
-            self.obstacle_sprites,
-            self.data
-        )
-            
-        # make the pygame SpriteGroup with a scrolling map
-        self.map_group = pyscroll.PyscrollGroup(map_layer=map_layer)
+            player_position = (1200, 1300)  # Default player start position
+
+        # Create player sprite and add to map group
+        self.player = Player(player_position, self.obstacle_sprites, self.data)
+        self.map_group.add(self.player)
         
         
     def run(self):
         running = True
-        dt = self.clock.tick(60) / 1000
         while running:
+            dt = self.clock.tick(60) / 1000  # Delta time for smooth movement
+            
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -76,17 +92,23 @@ class World:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN and self.player.dialog_active:  # Advance dialog
                     self.dialog1.advance()
+            
             self.display_surface.fill('#1E7CB7')
-            self.run_world()  # Call the method that updates and draws the world
+            self.run_world()
             pygame.display.update()
-            self.clock.tick(60)  # Ensure the game runs at the correct FPS
 
     def run_world(self):
-        self.map_group.draw(self.display_surface)
-        self.visible_sprites.update()
-        self.visible_sprites.custom_draw(self.player, self.foreground_sprites, self.foreground_sprites_2)
+        self.map_group.center(self.player.rect.center)
 
-        
+        # Update all sprites
+        self.map_group.update()
+
+        # Draw the map and sprites
+        self.map_group.draw(self.display_surface)
+
+        # Handle any additional drawing, such as the dialog box
+        if self.player.dialog_active:
+            self.dialog1.render()
         self.loaded = True
         
     # Пауза
@@ -148,7 +170,9 @@ class World:
                                 print('options')
                             elif button["action"] == "mainmenu":
                                 paused = False
-                                self.menu_screen()
+                                from main import Game
+                                self.game = Game()
+                                self.game.menu_screen()
                             elif button["action"] == "quit":
                                 pygame.quit()
                                 sys.exit()
