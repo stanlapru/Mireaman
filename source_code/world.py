@@ -5,7 +5,6 @@ from world import *
 from player import Player
 from npc import NPC
 from dialog_box import DialogBox
-from animated_tile import AnimatedTile
 
 class World:
     def __init__(self, data, new):
@@ -72,6 +71,8 @@ class World:
         # Create player sprite and add to map group
         self.player = Player(player_position, self.obstacle_sprites, self.data)
         self.map_group.add(self.player)
+        self.npc = NPC((250,250),self.map_group,self.data)
+        self.map_group.add(self.npc)
         
         
     def run(self):
@@ -95,20 +96,30 @@ class World:
             
             self.display_surface.fill('#1E7CB7')
             self.run_world()
+            npcs = [sprite for sprite in self.map_group.sprites() if isinstance(sprite, NPC)]
+            self.player.input(npcs)
             pygame.display.update()
 
     def run_world(self):
         self.map_group.center(self.player.rect.center)
 
         # Update all sprites
-        self.map_group.update()
+        for sprite in self.map_group.sprites():
+            if isinstance(sprite, NPC):
+                sprite.update(self.player.rect.center)  # Pass player's position to NPC
+            else:
+                sprite.update()
 
         # Draw the map and sprites
         self.map_group.draw(self.display_surface)
 
+        for sprite in self.map_group.sprites():
+            if isinstance(sprite, NPC):
+                sprite.draw_interact_text(self.display_surface)
+
         # Handle any additional drawing, such as the dialog box
         if self.player.dialog_active:
-            self.dialog1.render()
+            self.dialog1.display()
         self.loaded = True
         
     # Пауза

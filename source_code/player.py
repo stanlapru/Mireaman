@@ -69,7 +69,7 @@ class Player(pygame.sprite.Sprite):
         self.image = animation[int(self.frame_index)]
         self.rect = self.image.get_rect(center=self.hitbox.center)
 
-    def input(self):
+    def input(self, npcs):
         """Handle player input (movement and interaction)."""
         if self.dialog_active:  # Block input when dialog is active
             self.direction.x = 0
@@ -100,8 +100,11 @@ class Player(pygame.sprite.Sprite):
 
         # Interaction (press 'E')
         if keys[pygame.K_e] and not self.interacting:
-            self.interacting = True
-            self.interact_time = pygame.time.get_ticks()
+            for npc in npcs:
+                if npc.show_interact_text:  # If the player is close to the NPC
+                    self.dialog_active = True  # Show dialog box (assuming this triggers dialog)
+                    npc.interacting = True
+                    break   
 
     def move(self, speed):
         """Move the player, handling collisions."""
@@ -147,7 +150,7 @@ class Player(pygame.sprite.Sprite):
 
     def update(self):
         """Update the player state each frame."""
-        self.input()
+        #self.input(npcs)
         self.cooldowns()
         self.get_status()
         self.animate()
