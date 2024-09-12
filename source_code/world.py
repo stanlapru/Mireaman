@@ -12,12 +12,25 @@ class World:
         self.load_save = new
         self.clock = pygame.time.Clock()
         self.data = data
+        self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
         pygame.mixer.music.load("./resources/audio/music/Kevin MacLeod - Cipher.mp3")
         pygame.mixer.music.play()
         self.create_map()
         self.loaded = False
+        
+        self.npc_list = [
+            NPC((250,250),self.map_group,self.data,"tutorial_npc")
+        ]
+        
+        # Initialize the dialog box
+        self.dialog_box = DialogBox(self.display_surface)
 
-        self.dialog1 = DialogBox(self.display_surface, ['Привет, мне очень нужна помощь с компьютером!', "Он как-то сбоит и просит перевести числа в двоичную систему счисления...", "И ты мне с этим поможешь, потому что выбор для отказа ещё не добавлен в игру. :)"])
+        # If your dialog data is in a JSON file, you can load it here
+        with open('./data/dialogs.json', encoding="utf8") as f:
+            self.dialog_data = json.load(f)
+
+        # Pass dialog data to dialog box
+        self.dialog_box.set_dialog_data(self.dialog_data)
         
     def load_tileset(self, path, tile_size, scale_factor=3):
         # This function is defined as above
@@ -71,7 +84,7 @@ class World:
         # Create player sprite and add to map group
         self.player = Player(player_position, self.obstacle_sprites, self.data)
         self.map_group.add(self.player)
-        self.npc = NPC((250,250),self.map_group,self.data)
+        self.npc = NPC((250,250),self.map_group,self.data,"intro")
         self.map_group.add(self.npc)
         
         
@@ -91,8 +104,9 @@ class World:
                     running = False
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN and self.player.dialog_active:  # Advance dialog
-                    self.dialog1.advance()
+                if event.type == pygame.MOUSEBUTTONDOWN and self.dialog_box.dialog_active: # Advance dialog
+                    print('advancing')
+                    self.dialog_box.advance()
             
             self.display_surface.fill('#1E7CB7')
             self.run_world()
@@ -113,14 +127,18 @@ class World:
         # Draw the map and sprites
         self.map_group.draw(self.display_surface)
 
-        for sprite in self.map_group.sprites():
-            if isinstance(sprite, NPC):
-                sprite.draw_interact_text(self.display_surface)
+        # Check if player is interacting with any NPC
+        for npc in self.npc_list:
+            if npc.player_nearby and not self.dialog_box.dialog_active:
+                if pygame.key.get_pressed()[pygame.K_e]:
+                    self.dialog_box.load_dialog(npc.dialog_id)
 
         # Handle any additional drawing, such as the dialog box
-        if self.player.dialog_active:
-            self.dialog1.display()
+        if self.dialog_box.dialog_active:
+            self.dialog_box.render()
+
         self.loaded = True
+        # pygame.display.update()
         
     # Пауза
     def pause_screen(self):

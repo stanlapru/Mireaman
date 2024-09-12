@@ -1,86 +1,91 @@
 import pygame
 
-DIALOG_BOX_HEIGHT = 150
-DIALOG_BOX_PADDING = 20
-
 class DialogBox:
-    def __init__(self, screen, lines):
+    def __init__(self, screen, max_width=600):
         self.screen = screen
-        self.lines = lines  # List of strings to display
-        self.current_line = 0
-        self.current_char = 0
-        self.finished = True
-        self.started = False
-        self.text_surface = None
+        self.dialog_active = False
+        self.text_lines = []
+        self.max_width = max_width  # Max width for the wrapped text area
+        self.padding = 10  # Padding inside the dialog box
+        self.dialog_rect = pygame.Rect(50, 500, max_width + self.padding * 2, 200)  # Dialog box area
+        self.text_color = (255, 255, 255)
+        self.npc_image = None
         self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
-        self.max_width = 1280 - 2 * (DIALOG_BOX_PADDING + 20)  # Maximum width for text before wrapping
-        self.next_line()
+        self.npc_name = ""
+        self.dialog_data = None
+        self.dialog_index = 0
+        self.current_dialog = None
+
+    def set_dialog_data(self, dialog_data):
+        self.dialog_data = dialog_data
     
     def wrap_text(self, text):
-        """Wrap text into lines that fit within the dialog box width."""
+        """Wraps the given text into lines that fit within the max_width."""
         words = text.split(' ')
         wrapped_lines = []
-        current_line = words[0]
-
-        for word in words[1:]:
-            test_line = current_line + ' ' + word
-            if self.font.size(test_line)[0] <= self.max_width:
-                current_line = test_line
-            else:
+        current_line = ''
+        
+        for word in words:
+            if self.font.size(current_line + word)[0] > self.max_width:
                 wrapped_lines.append(current_line)
-                current_line = word
-
-        wrapped_lines.append(current_line)
+                current_line = word + ' '
+            else:
+                current_line += word + ' '
+        
+        if current_line:
+            wrapped_lines.append(current_line.strip())
+        
         return wrapped_lines
 
-    def next_line(self):
-        """Move to the next line or finish the dialog."""
-        if self.current_line < len(self.lines):
-            self.current_char = 0
-            # Wrap the current line text to fit the dialog box width
-            wrapped_lines = self.wrap_text(self.lines[self.current_line])
-            self.current_line_text = wrapped_lines
-            self.current_line += 1
-        else:
-            self.finished = True
+    def load_dialog(self, dialog_id):
+        """Loads dialog text, NPC name, and image based on dialog ID."""
+        self.dialog_index = 0  # Reset the dialog to the first line
+        dialog = self.dialog_data.get(dialog_id)
+        print(dialog)
+        if dialog:
+            self.current_dialog = dialog['lines']  # Assume this is a list of dialog strings for multi-line conversations
+            self.update_current_dialog()
+            self.npc_name = dialog['npc_name']
+            self.npc_image = pygame.image.load(dialog['npc_image']).convert_alpha()
+            self.npc_image = pygame.transform.scale(self.npc_image, (64, 64))  # Scale the image to fit
+            self.dialog_active = True
 
-    def update(self):
-        """Update the text display (simulate typewriter effect)."""
-        if not self.finished:
-            if self.current_char < len(self.current_line_text):
-                self.current_char += 1
-                text_to_display = ' '.join(self.current_line_text[:self.current_char])
-                self.text_surface = self.font.render(text_to_display, True, (255,255,255))
-
-    def draw(self, surface):
-        """Draw the dialog box and the current line of text."""
-        # Draw dialog box background
-        dialog_box_rect = pygame.Rect(DIALOG_BOX_PADDING, 720 - DIALOG_BOX_HEIGHT - DIALOG_BOX_PADDING,
-                                      1280 - 2 * DIALOG_BOX_PADDING, DIALOG_BOX_HEIGHT)
-        pygame.draw.rect(surface, (0,0,0), dialog_box_rect)
-
-        # Draw the current text line
-        if self.text_surface:
-            y_offset = 720 - DIALOG_BOX_HEIGHT - DIALOG_BOX_PADDING + 20
-            for line in self.current_line_text:
-                line_surface = self.font.render(line, True, (255,255,255))
-                surface.blit(line_surface, (DIALOG_BOX_PADDING + 20, y_offset))
-                y_offset += self.font.get_linesize()
+    def update_current_dialog(self):
+        """Update the current dialog text with wrapping."""
+        if self.current_dialog and self.dialog_index < len(self.current_dialog):
+            self.text_lines = self.wrap_text(self.current_dialog[self.dialog_index])
 
     def advance(self):
-        """Advance to the next line of dialog."""
-        if self.current_char == len(self.current_line_text):
-            self.next_line()
+        """Advance to the next part of the dialog."""
+        if self.dialog_active:
+            self.dialog_index += 1
+            if self.dialog_index < len(self.current_dialog):
+                self.update_current_dialog()
+            else:
+                self.dialog_active = False  # End of dialog
 
-    def display(self):
-        # Update the dialog box
-        self.update()
+    def render(self):
+        if self.dialog_active:
+            # Draw the dialog box background
+            pygame.draw.rect(self.screen, (0, 0, 0), self.dialog_rect)
+            pygame.draw.rect(self.screen, (255, 255, 255), self.dialog_rect, 2)
 
-        # Draw the dialog box
-        self.draw(self.screen)
-        
-        # Update the display
-        pygame.display.flip()
+            # Draw the NPC image (to the left of the dialog)
+            image_pos = (self.dialog_rect.x + self.padding, self.dialog_rect.y + self.padding)
+            if self.npc_image:
+                self.screen.blit(self.npc_image, image_pos)
 
-        # Delay to control text speed
-        pygame.time.delay(20)
+            # Draw the NPC name
+            name_pos = (image_pos[0] + 70, self.dialog_rect.y + self.padding)
+            name_render = self.font.render(self.npc_name, True, self.text_color)
+            self.screen.blit(name_render, name_pos)
+
+            # Adjust text position to accommodate the NPC image and name
+            text_x = name_pos[0]
+            text_y = name_pos[1] + self.font.get_height() + 10  # Move text below the NPC name
+
+            # Draw each wrapped line of text
+            for line in self.text_lines:
+                rendered_text = self.font.render(line, True, self.text_color)
+                self.screen.blit(rendered_text, (text_x, text_y))
+                text_y += self.font.get_height() + 5  # Adjust line spacing

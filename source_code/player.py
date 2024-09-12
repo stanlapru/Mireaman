@@ -101,10 +101,20 @@ class Player(pygame.sprite.Sprite):
         # Interaction (press 'E')
         if keys[pygame.K_e] and not self.interacting:
             for npc in npcs:
-                if npc.show_interact_text:  # If the player is close to the NPC
-                    self.dialog_active = True  # Show dialog box (assuming this triggers dialog)
-                    npc.interacting = True
-                    break   
+                if npc.player_nearby:  # Check if an NPC is nearby
+                    self.interacting = True  # Start interaction
+                    npc.interacting = True  # Let the NPC know the interaction started
+                    self.dialog_active = True  # Show dialog
+                    break
+        elif not keys[pygame.K_e]:
+            self.interacting = False
+        
+        if keys[pygame.K_EQUALS]:
+            self.hitbox.x = 250
+            self.hitbox.y = 250
+            
+        if self.dialog_active and keys[pygame.K_RETURN]:
+            self.dialog_box.advance()
 
     def move(self, speed):
         """Move the player, handling collisions."""
@@ -142,11 +152,12 @@ class Player(pygame.sprite.Sprite):
                         self.hitbox.top = sprite.rect.bottom
 
     def cooldowns(self):
-        """Handle cooldowns for interaction."""
-        current_time = pygame.time.get_ticks()
-        if self.interacting:
-            if current_time - self.interact_time >= self.interact_cd:
-                self.interacting = False
+        # """Handle cooldowns for interaction."""
+        # current_time = pygame.time.get_ticks()
+        # if self.interacting:
+        #     if current_time - self.interact_time >= self.interact_cd:
+        #         self.interacting = False
+        pass
 
     def update(self):
         """Update the player state each frame."""

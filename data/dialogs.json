@@ -1,0 +1,129 @@
+{
+    "tutorial_npc": {
+        "intro": {
+            "id": 1,
+            "npc_name": "Гриша",
+            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Привет! Добро пожаловать в наш замечательный мир грифонов!"
+                },
+                {
+                    "text": "Здесь ты сможешь опробовать свои знания во многих сферах наук, но сначала ты должен понять, как двигаться! "
+                },
+                {
+                    "text": "Нажми W, чтобы двигаться вперед, S - вниз, A - влево, D - вправо."
+                },
+                {
+                    "text": "Понял? Отлично! Пойдём, поговорим с кем нибудь! (Нажми Е, чтобы начать разговор)"
+                }
+            ],
+            "next": "first_task"
+        },
+        "disappear": {
+            "id": 2,
+            "npc_name": "Гриша",
+            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Good luck! I'm out of here."
+                }
+            ]
+        }
+    },
+    "quest_giver": {
+        "help_request": {
+            "id": 1,
+            "npc_name": "Quest NPC",
+            "npc_texture": "resources/textures/npc/quest_giver.png",
+            "lines": [
+                {
+                    "text": "I need your help! Can you assist me?"
+                },
+                {
+                    "text": "You can choose to help or refuse."
+                }
+            ],
+            "options": [
+                {
+                    "text": "Yes, I'll help.",
+                    "next": "help_accepted"
+                },
+                {
+                    "text": "No, not right now.",
+                    "next": "help_refused"
+                }
+            ]
+        },
+        "help_accepted": {
+            "id": 2,
+            "npc_name": "Quest NPC",
+            "npc_texture": "resources/textures/npc/quest_giver.png",
+            "lines": [
+                {
+                    "text": "Thank you! Meet me at the bridge."
+                }
+            ]
+        },
+        "help_refused": {
+            "id": 3,
+            "npc_name": "Quest NPC",
+            "npc_texture": "resources/textures/npc/quest_giver.png",
+            "lines": [
+                {
+                    "text": "Alright, come back if you change your mind."
+                }
+            ]
+        }
+    },
+    "multi_npc_dialog": {
+        "dialog_1": {
+            "id": 1,
+            "npc_name": "NPC1",
+            "npc_texture": "resources/textures/npc/npc1.png",
+            "lines": [
+                {
+                    "text": "Hey there, Player! Have you seen NPC2 around?"
+                },
+                {
+                    "text": "We need to discuss something important."
+                }
+            ],
+            "next": "dialog_2"
+        },
+        "dialog_2": {
+            "id": 2,
+            "npc_name": "NPC2",
+            "npc_texture": "resources/textures/npc/npc2.png",
+            "lines": [
+                {
+                    "text": "I'm right here, NPC1. What did you want to talk about?"
+                },
+                {
+                    "text": "Is this about the Player's quest?"
+                }
+            ],
+            "next": "dialog_3"
+        },
+        "dialog_3": {
+            "id": 3,
+            "npc_name": "NPC1",
+            "npc_texture": "resources/textures/npc/npc1.png",
+            "lines": [
+                {
+                    "text": "Yes, it's about the quest. Player, are you ready to start?"
+                }
+            ],
+            "options": [
+                {
+                    "text": "Yes, I'm ready.",
+                    "next": "dialog_4"
+                },
+                {
+                    "text": "No, I need more time.",
+                    "next": "dialog_5"
+                }
+            ]
+        }
+    }
+}

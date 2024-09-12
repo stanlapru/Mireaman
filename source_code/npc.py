@@ -3,7 +3,7 @@ from settings import *
 from support import import_folder
 
 class NPC(pygame.sprite.Sprite):
-    def __init__(self, pos, groups, data, interact_distance=30):
+    def __init__(self, pos, groups, data, dialog_id, interact_distance=30,):
         super().__init__(groups)
         self.image = pygame.image.load('./resources/textures/npc/1/down_idle/1.png').convert_alpha()
         self.rect = self.image.get_rect(topleft = pos)
@@ -13,6 +13,7 @@ class NPC(pygame.sprite.Sprite):
         self.status = 'down_idle'
         self.frame_index = 0
         self.animation_speed = 0.05
+        self.dialog_id = dialog_id
   
         self.direction = pygame.math.Vector2()
         self.speed = 5
@@ -54,13 +55,16 @@ class NPC(pygame.sprite.Sprite):
     def check_proximity(self, player_pos):
         """Check if player is close enough to interact."""
         distance = pygame.math.Vector2(self.rect.center).distance_to(player_pos)
-        self.show_interact_text = distance < self.interact_distance
+        if distance < 100:  # Example range for interaction
+            self.player_nearby = True
+        else:
+            self.player_nearby = False
 
     def draw_interact_text(self, display_surface):
         """Draw the 'Interact' text above the NPC."""
-        if self.show_interact_text:
-            interact_text = self.font.render('Поговорить', True, (255, 255, 255))  # White text
-            display_surface.blit(interact_text, (self.rect.centerx * 2, self.rect.top))
+        if self.player_nearby and not self.interacting:
+            interact_text = self.font.render('[E]', True, (255, 255, 255))  # White text
+            display_surface.blit(interact_text, (display_surface.get_width() // 2, display_surface.get_height() // 2 - 50))
             
     def get_status(self):
         if self.direction.x == 0 and self.direction.y == 0:
