@@ -79,9 +79,24 @@ class World:
         else:
             player_position = (516, 678)  # Default player start position
 
-        # Создаем NPC
+        # Создаем NPC, x-12, y-34
         self.npc_list = [
-            NPC((578,678),self.map_group,self.data,"tutorial_npc.intro",)
+            NPC((578,678),self.map_group,self.data,"tutorial_npc.intro",), # 0
+            NPC((700,590),self.map_group,self.data,"tutorial_npc.intro",), # 1
+            NPC((700,490),self.map_group,self.data,"tutorial_npc.intro",),
+            NPC((278,468),self.map_group,self.data,"tutorial_npc.intro",),
+            NPC((381,702),self.map_group,self.data,"tutorial_npc.intro",),
+            NPC((590,900),self.map_group,self.data,"tutorial_npc.intro",), # 5
+            NPC((430,210),self.map_group,self.data,"tutorial_npc.intro",), # all of the above in city
+            NPC((420,1600),self.map_group,self.data,"tutorial_npc.intro",), # bottomleft fortress guy
+            NPC((1280,230),self.map_group,self.data,"tutorial_npc.intro",), # top village guy
+            NPC((1240,607),self.map_group,self.data,"tutorial_npc.intro",), # left of village fountain
+            NPC((1764,401),self.map_group,self.data,"tutorial_npc.intro",), # 10     shore guy
+            NPC((1244,900),self.map_group,self.data,"tutorial_npc.intro",), # picnic guy
+            NPC((1088,1274),self.map_group,self.data,"tutorial_npc.intro",), # midleft village
+            NPC((1804,1722),self.map_group,self.data,"tutorial_npc.intro",), # bottom right
+            NPC((1311,1414),self.map_group,self.data,"tutorial_npc.intro",), # waterfall
+            NPC((1712,1252),self.map_group,self.data,"tutorial_npc.intro",), # 15     farmer
         ]
         
         # Create player sprite and add to map group
@@ -112,6 +127,11 @@ class World:
             
             self.display_surface.fill('#1E7CB7')
             self.run_world()
+            
+            text_surface = self.font.render(str(self.player.rect.x)+","+str(self.player.rect.y), True, pygame.Color('white'))
+            rect = text_surface.get_rect(topleft=(1,1))
+            self.display_surface.blit(text_surface, rect)
+        
             pygame.display.update()
 
     def run_world(self):

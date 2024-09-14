@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.original_image, (
             self.original_image.get_width() // 2, self.original_image.get_height() // 2))
         self.rect = self.image.get_rect(center=pos)
-        self.hitbox = self.rect.inflate(-16, -8)  # Smaller hitbox for more precise collision
+        self.hitbox = self.rect.inflate(-16, -16)  # Smaller hitbox for more precise collision
 
         # Animation setup
         self.import_player_assets()
