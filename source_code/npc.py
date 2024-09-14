@@ -55,7 +55,7 @@ class NPC(pygame.sprite.Sprite):
     def check_proximity(self, player_pos):
         """Check if player is close enough to interact."""
         distance = pygame.math.Vector2(self.rect.center).distance_to(player_pos)
-        if distance < 100:  # Example range for interaction
+        if distance < self.interact_distance:  # Example range for interaction
             self.player_nearby = True
         else:
             self.player_nearby = False
@@ -88,10 +88,3 @@ class NPC(pygame.sprite.Sprite):
         self.get_status()
         self.animate()
         self.check_proximity(player_pos)
-
-    def draw(self, surface):
-        """Draw player or arrow based on visibility."""
-        if self.arrow_visible:
-            surface.blit(self.arrow_image, self.arrow_rect)
-        else:
-            surface.blit(self.image, self.rect)

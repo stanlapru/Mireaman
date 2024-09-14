@@ -15,12 +15,10 @@ class World:
         self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
         pygame.mixer.music.load("./resources/audio/music/Kevin MacLeod - Cipher.mp3")
         pygame.mixer.music.play()
-        self.create_map()
+        
         self.loaded = False
         
-        self.npc_list = [
-            NPC((250,250),self.map_group,self.data,"tutorial_npc")
-        ]
+        self.create_map()
         
         # Initialize the dialog box
         self.dialog_box = DialogBox(self.display_surface)
@@ -79,13 +77,18 @@ class World:
         if self.load_save == True:
             player_position = (self.data['pos_x'], self.data['pos_y'])
         else:
-            player_position = (1200, 1300)  # Default player start position
+            player_position = (516, 678)  # Default player start position
 
+        # Создаем NPC
+        self.npc_list = [
+            NPC((578,678),self.map_group,self.data,"tutorial_npc.intro",)
+        ]
+        
         # Create player sprite and add to map group
         self.player = Player(player_position, self.obstacle_sprites, self.data)
         self.map_group.add(self.player)
-        self.npc = NPC((250,250),self.map_group,self.data,"intro")
-        self.map_group.add(self.npc)
+        for npc in self.npc_list:
+            self.map_group.add(npc)
         
         
     def run(self):
@@ -105,16 +108,22 @@ class World:
                     pygame.quit()
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN and self.dialog_box.dialog_active: # Advance dialog
-                    print('advancing')
                     self.dialog_box.advance()
             
             self.display_surface.fill('#1E7CB7')
             self.run_world()
-            npcs = [sprite for sprite in self.map_group.sprites() if isinstance(sprite, NPC)]
-            self.player.input(npcs)
             pygame.display.update()
 
     def run_world(self):
+        npcs = [sprite for sprite in self.map_group.sprites() if isinstance(sprite, NPC)]
+        if not self.dialog_box.dialog_active:
+            self.player.input(npcs)  # Handle player movement
+        # else:
+        #     # If dialog is active, check if player advances the dialog
+        #     keys = pygame.key.get_pressed()
+        #     if keys[pygame.K_e]:
+        #         self.dialog_box.advance()
+        
         self.map_group.center(self.player.rect.center)
 
         # Update all sprites
@@ -155,9 +164,8 @@ class World:
     
         buttons = [
         {"text": "Продолжить", "rect": pygame.Rect(self.display_surface.get_width() // 2 - 75, self.display_surface.get_height() // 2 - 20, 150, 50), "action": "resume"},
-        {"text": "Настройки", "rect": pygame.Rect(self.display_surface.get_width() // 2 - 75, self.display_surface.get_height() // 2 + 50, 150, 50), "action": "options"},
-        {"text": "В главное меню", "rect": pygame.Rect(self.display_surface.get_width() // 2 - 75, self.display_surface.get_height() // 2 + 120, 150, 50), "action": "mainmenu"},
-        {"text": "Выйти", "rect": pygame.Rect(self.display_surface.get_width() // 2 - 75, self.display_surface.get_height() // 2 + 190, 150, 50), "action": "quit"},
+        {"text": "В главное меню", "rect": pygame.Rect(self.display_surface.get_width() // 2 - 75, self.display_surface.get_height() // 2 + 50, 150, 50), "action": "mainmenu"},
+        {"text": "Выйти", "rect": pygame.Rect(self.display_surface.get_width() // 2 - 75, self.display_surface.get_height() // 2 + 120, 150, 50), "action": "quit"},
         ]
         
         while paused:

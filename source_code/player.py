@@ -71,10 +71,10 @@ class Player(pygame.sprite.Sprite):
 
     def input(self, npcs):
         """Handle player input (movement and interaction)."""
-        if self.dialog_active:  # Block input when dialog is active
-            self.direction.x = 0
-            self.direction.y = 0
-            return
+        # if self.dialog_active:  # Block input when dialog is active
+        #     self.direction.x = 0
+        #     self.direction.y = 0
+        #     return
 
         keys = pygame.key.get_pressed()
 
@@ -105,16 +105,15 @@ class Player(pygame.sprite.Sprite):
                     self.interacting = True  # Start interaction
                     npc.interacting = True  # Let the NPC know the interaction started
                     self.dialog_active = True  # Show dialog
+                    self.direction.x = 0
+                    self.direction.y = 0
                     break
         elif not keys[pygame.K_e]:
             self.interacting = False
         
         if keys[pygame.K_EQUALS]:
-            self.hitbox.x = 250
-            self.hitbox.y = 250
-            
-        if self.dialog_active and keys[pygame.K_RETURN]:
-            self.dialog_box.advance()
+            self.hitbox.x = 528
+            self.hitbox.y = 678
 
     def move(self, speed):
         """Move the player, handling collisions."""

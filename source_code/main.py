@@ -29,7 +29,9 @@ class Game:
             # the file already exists 
             with open('./data/savedata.json') as load_file: 
                 self.savedata = json.load(load_file) 
+                self.scr_width = load_file.read()
         except FileNotFoundError: 
+            print('No savefile found. Creating new one.')
             # create the file and store initial values 
             with open('./data/savedata.json', 'w') as store_file: 
                 json.dump(self.savedata, store_file) 
@@ -37,7 +39,7 @@ class Game:
         pygame.init()
         pygame.mixer.init()
         # display_info = pygame.display.Info()
-        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((self.savedata.get('width', 1280), (self.savedata.get('height', 720))))
         pygame.display.set_caption("Мир грифонов")
         
         # Custom cursor
@@ -54,6 +56,9 @@ class Game:
         
         self.menu_screen()
 
+    def set_resolution(self):
+        pygame.display.set_mode((self.savedata.get('width', 1280), (self.savedata.get('height', 720))))
+
     # Пауза
     def pause_screen(self):
         paused = True
@@ -69,9 +74,8 @@ class Game:
     
         buttons = [
         {"text": "Продолжить", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 - 20, 150, 50), "action": "resume"},
-        {"text": "Настройки", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 50, 150, 50), "action": "options"},
-        {"text": "В главное меню", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 120, 150, 50), "action": "mainmenu"},
-        {"text": "Выйти", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 190, 150, 50), "action": "quit"},
+        {"text": "В главное меню", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 50, 150, 50), "action": "mainmenu"},
+        {"text": "Выйти", "rect": pygame.Rect(self.screen.get_width() // 2 - 75, self.screen.get_height() // 2 + 120, 150, 50), "action": "quit"},
         ]
         
         while paused:
@@ -124,7 +128,7 @@ class Game:
     # Главное меню
     def menu_screen(self):
         running = True
-        main_screen = StartScreen(self.screen)
+        main_screen = StartScreen(self.screen, self)
         while running:
             self.screen.fill(pygame.Color('#d87093'))
             for event in pygame.event.get():
@@ -145,15 +149,16 @@ class Game:
                     # if main_screen.buttons[0].is_clicked(event.pos):
                     #     running = False
                     #     self.run(False) # new
-                    if main_screen.buttons[0].is_clicked(event.pos): # new game; platformer selection
-                        running = False
-                        self.platformer_screen()
-                    if main_screen.buttons[1].is_clicked(event.pos): # load existing game
-                        running = False
-                        self.run(True) # load
-                    if main_screen.buttons[3].is_clicked(event.pos): # credits
-                        running = False
-                        self.credits_screen()
+                    if not main_screen.show_resolution and not main_screen.show_settings:
+                        if main_screen.buttons[0].is_clicked(event.pos): # new game; platformer selection
+                            running = False
+                            self.platformer_screen()
+                        if main_screen.buttons[1].is_clicked(event.pos): # load existing game
+                            running = False
+                            self.run(True) # load
+                        if main_screen.buttons[3].is_clicked(event.pos): # credits
+                            running = False
+                            self.credits_screen()
                     main_screen.handle_mouse_click(event.pos)
             main_screen.draw()
             pygame.display.flip()
