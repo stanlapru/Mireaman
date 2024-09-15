@@ -50,7 +50,7 @@ class StartScreen:
         self.save_data["width"] = self.current_resolution[0]
         self.save_data["height"] = self.current_resolution[1]
         with open('./data/savedata.json', 'w') as f:
-            json.dump(self.save_data, f)
+            json.dump(self.save_data, f, indent=4)
         
     def create_buttons(self):
         self.buttons = [

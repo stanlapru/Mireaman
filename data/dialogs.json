@@ -1,6 +1,9 @@
 {
-    "tutorial_npc": {
-        "intro": {
+    "tutorial-npc": {
+        "id": 1,
+        "npc_name": "Гриша",
+        "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+        "main": {
             "id": 1,
             "npc_name": "Гриша",
             "npc_texture": "resources/textures/npc/1/down_idle/1.png",
@@ -18,11 +21,21 @@
                     "text": "Ещё наверняка тебе придётся здесь с кем-нибудь поговорить. Чтобы это получилось, подойди поближе к собеседнику, и нажми Е!"
                 },
                 {
-                    "text": "Всё понял? Отлично! Пойдём, поговорим с кем нибудь!"
+                    "text": "Всё понял? Отлично! Пойдём, поговорим с кем-нибудь!"
                 }
-            ],
-            "next": "first_task"
+            ]
         },
+        "post": {
+            "id": 2,
+            "npc_name": "Гриша",
+            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Я уже объяснил, как двигаться. Удачи!"
+                }
+            ]
+        },
+        "next": "first_task",
         "disappear": {
             "id": 2,
             "npc_name": "Гриша",
@@ -34,37 +47,36 @@
             ]
         }
     },
-    "quest_giver": {
-        "help_request": {
+    "dmitri": {
+        "main": {
             "id": 1,
-            "npc_name": "Quest NPC",
-            "npc_texture": "resources/textures/npc/quest_giver.png",
+            "npc_name": "Дмитрий",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
             "lines": [
                 {
-                    "text": "I need your help! Can you assist me?"
-                },
-                {
-                    "text": "You can choose to help or refuse."
+                    "text": "О! Помощь! Ура!"
                 }
-            ],
-            "options": [
+                
+            ]
+        },
+        "post": {
+            "id": 1,
+            "npc_name": "Дмитрий",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
                 {
-                    "text": "Yes, I'll help.",
-                    "next": "help_accepted"
-                },
-                {
-                    "text": "No, not right now.",
-                    "next": "help_refused"
+                    "text": "Можешь помочь мне с заданием?"
+                    
                 }
             ]
         },
         "help_accepted": {
             "id": 2,
             "npc_name": "Quest NPC",
-            "npc_texture": "resources/textures/npc/quest_giver.png",
+            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
             "lines": [
                 {
-                    "text": "Thank you! Meet me at the bridge."
+                    "text": "Спасибо! Вот задание."
                 }
             ]
         },
@@ -74,7 +86,7 @@
             "npc_texture": "resources/textures/npc/quest_giver.png",
             "lines": [
                 {
-                    "text": "Alright, come back if you change your mind."
+                    "text": "Ладно, возвращайся, когда будешь свободен."
                 }
             ]
         }

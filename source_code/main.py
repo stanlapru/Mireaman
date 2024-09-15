@@ -8,7 +8,6 @@ from start_screen import StartScreen
 from credits_screen import CreditsScreen
 from error_screen import ErrorScreen
 from platformer_screen import PlatformerWorld
-#from loading_screen import LoadingScreen
 from transition_screen import PortalScreen
 from problems.ict.ict1 import ICTone
 
@@ -23,6 +22,7 @@ class Game:
             'demo_mode': False,
             'width': 1280,
             'height': 720,
+            'npc_interactions': {},
         }
         
         try: 
@@ -34,7 +34,7 @@ class Game:
             print('No savefile found. Creating new one.')
             # create the file and store initial values 
             with open('./data/savedata.json', 'w') as store_file: 
-                json.dump(self.savedata, store_file) 
+                json.dump(self.savedata, store_file, indent=4) 
         
         pygame.init()
         pygame.mixer.init()
@@ -103,7 +103,7 @@ class Game:
                     paused = False
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:   
                     if event.key == pygame.K_ESCAPE or event.key == pygame.K_p:
                         pygame.mixer.music.unpause()
                         paused = False
@@ -221,7 +221,7 @@ class Game:
     
     # Экран с миром
     def run(self, new):
-        world = World(self.savedata, new)
+        world = World(self.savedata, new, self)
         world.run()
 
     def ict1(self):

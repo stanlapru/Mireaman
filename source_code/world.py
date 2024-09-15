@@ -7,7 +7,7 @@ from npc import NPC
 from dialog_box import DialogBox
 
 class World:
-    def __init__(self, data, new):
+    def __init__(self, data, new, game):
         self.display_surface = pygame.display.get_surface()
         self.load_save = new
         self.clock = pygame.time.Clock()
@@ -17,15 +17,15 @@ class World:
         pygame.mixer.music.play()
         
         self.loaded = False
-        
+        self.game = game
         self.create_map()
-        
-        # Initialize the dialog box
-        self.dialog_box = DialogBox(self.display_surface)
 
         # If your dialog data is in a JSON file, you can load it here
         with open('./data/dialogs.json', encoding="utf8") as f:
             self.dialog_data = json.load(f)
+            
+        # Initialize the dialog box
+        self.dialog_box = DialogBox(self.display_surface, self.data, self.game)
 
         # Pass dialog data to dialog box
         self.dialog_box.set_dialog_data(self.dialog_data)
@@ -81,22 +81,22 @@ class World:
 
         # Создаем NPC, x-12, y-34
         self.npc_list = [
-            NPC((578,678),self.map_group,self.data,"tutorial_npc.intro",), # 0
-            NPC((700,590),self.map_group,self.data,"tutorial_npc.intro",), # 1
-            NPC((700,490),self.map_group,self.data,"tutorial_npc.intro",),
-            NPC((278,468),self.map_group,self.data,"tutorial_npc.intro",),
-            NPC((381,702),self.map_group,self.data,"tutorial_npc.intro",),
-            NPC((590,900),self.map_group,self.data,"tutorial_npc.intro",), # 5
-            NPC((430,210),self.map_group,self.data,"tutorial_npc.intro",), # all of the above in city
-            NPC((420,1600),self.map_group,self.data,"tutorial_npc.intro",), # bottomleft fortress guy
-            NPC((1280,230),self.map_group,self.data,"tutorial_npc.intro",), # top village guy
-            NPC((1240,607),self.map_group,self.data,"tutorial_npc.intro",), # left of village fountain
-            NPC((1764,401),self.map_group,self.data,"tutorial_npc.intro",), # 10     shore guy
-            NPC((1244,900),self.map_group,self.data,"tutorial_npc.intro",), # picnic guy
-            NPC((1088,1274),self.map_group,self.data,"tutorial_npc.intro",), # midleft village
-            NPC((1804,1722),self.map_group,self.data,"tutorial_npc.intro",), # bottom right
-            NPC((1311,1414),self.map_group,self.data,"tutorial_npc.intro",), # waterfall
-            NPC((1712,1252),self.map_group,self.data,"tutorial_npc.intro",), # 15     farmer
+            NPC((578,678),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/1/down_idle/1.png'), # 0
+            NPC((700,590),self.map_group,self.data,"dmitri",'./resources/textures/npc/2/down_idle/1.png'), # 1
+            NPC((700,490),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/3/down_idle/1.png'),
+            NPC((278,468),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/4/down_idle/1.png'),
+            NPC((381,702),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/5/down_idle/1.png'),
+            NPC((590,900),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/6/down_idle/1.png'), # 5
+            NPC((430,210),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/7/down_idle/1.png'), # all of the above in city
+            NPC((420,1600),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/8/down_idle/1.png'), # bottomleft fortress guy
+            NPC((1280,230),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/9/down_idle/1.png'), # top village guy
+            NPC((1240,607),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/10/down_idle/1.png'), # left of village fountain
+            NPC((1764,401),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/1/down_idle/1.png'), # 10     shore guy
+            NPC((1244,900),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/1/down_idle/1.png'), # picnic guy
+            NPC((1088,1274),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/1/down_idle/1.png'), # midleft village
+            NPC((1804,1722),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/1/down_idle/1.png'), # bottom right
+            NPC((1311,1414),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/1/down_idle/1.png'), # waterfall
+            NPC((1712,1252),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/1/down_idle/1.png'), # 15     farmer
         ]
         
         # Create player sprite and add to map group
@@ -118,7 +118,7 @@ class World:
                 if event.type == pygame.QUIT:
                     if self.load_save:
                         with open('./data/savedata.json', 'w') as store_data: 
-                            json.dump(self.player.data, store_data) 
+                            json.dump(self.player.data, store_data, indent=4) 
                     running = False
                     pygame.quit()
                     sys.exit()
@@ -161,6 +161,7 @@ class World:
             if npc.player_nearby and not self.dialog_box.dialog_active:
                 if pygame.key.get_pressed()[pygame.K_e]:
                     self.dialog_box.load_dialog(npc.dialog_id)
+                    self.interact_with_npc(npc.dialog_id)
 
         # Handle any additional drawing, such as the dialog box
         if self.dialog_box.dialog_active:
@@ -168,6 +169,22 @@ class World:
 
         self.loaded = True
         # pygame.display.update()
+        
+    def interact_with_npc(self, npc_id):
+        """Check dialog state and trigger the appropriate dialog."""
+        npc_data = self.data.get('npc_interactions', {}).get(npc_id, {'dialog_seen': False})
+
+        # Check if the main dialog has been seen
+        if npc_data['dialog_seen']:
+            # Load an alternate dialog (e.g., a second phase or small talk)
+            self.dialog_box.load_dialog(f"{npc_id}.post")
+        else:
+            # Load the initial dialog
+            self.dialog_box.load_dialog(f"{npc_id}.main")
+
+        # Once dialog finishes, mark it as seen
+        self.dialog_box.mark_dialog_as_seen(npc_id)
+
         
     # Пауза
     def pause_screen(self):

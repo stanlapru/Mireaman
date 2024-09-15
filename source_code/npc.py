@@ -3,9 +3,10 @@ from settings import *
 from support import import_folder
 
 class NPC(pygame.sprite.Sprite):
-    def __init__(self, pos, groups, data, dialog_id, interact_distance=30,):
+    def __init__(self, pos, groups, data, dialog_id, texture, interact_distance=30,):
         super().__init__(groups)
-        self.image = pygame.image.load('./resources/textures/npc/1/down_idle/1.png').convert_alpha()
+        self.image = pygame.image.load(texture).convert_alpha()
+        self.texture_path = texture
         self.rect = self.image.get_rect(topleft = pos)
         self.hitbox = self.rect.inflate(-22,-22)
         
@@ -34,7 +35,7 @@ class NPC(pygame.sprite.Sprite):
 
         
     def import_player_assets(self):
-        character_path = './resources/textures/npc/1/'
+        character_path = self.texture_path[:-15]
         self.animations = {
             'up':[], 'down':[], 'left':[], 'right':[], 
             'up_idle':[], 'down_idle':[], 'left_idle':[], 'right_idle':[],
