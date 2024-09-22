@@ -1,6 +1,6 @@
 {
-    "pos_x": 598,
-    "pos_y": 711,
+    "pos_x": 714,
+    "pos_y": 572,
     "subjects": [
         "russian",
         "social",
@@ -12,11 +12,6 @@
     "height": 720,
     "sound_on": false,
     "npc_interactions": {
-        "dmitri": {
-            "dialog_seen": true
-        },
-        "tutorial-npc": {
-            "dialog_seen": true
-        }
+        
     }
 }

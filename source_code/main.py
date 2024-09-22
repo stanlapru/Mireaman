@@ -1,7 +1,7 @@
 # LAUNCH THIS
 import pygame
 import sys
-import json
+import json, random, string
 from settings import *
 from world import World
 from start_screen import StartScreen

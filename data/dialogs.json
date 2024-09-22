@@ -1,18 +1,21 @@
 {
     "tutorial-npc": {
         "id": 1,
-        "npc_name": "Гриша",
+        "npc_name": "Куратор",
         "npc_texture": "resources/textures/npc/1/down_idle/1.png",
         "main": {
             "id": 1,
-            "npc_name": "Гриша",
+            "npc_name": "Куратор",
             "npc_texture": "resources/textures/npc/1/down_idle/1.png",
             "lines": [
                 {
-                    "text": "Привет! Добро пожаловать в наш замечательный мир грифонов!"
+                    "text": "Добро пожаловать в Академию Магии и Наук, юный ученик!"
                 },
                 {
-                    "text": "Здесь ты сможешь опробовать свои знания во многих сферах наук, но сначала ты должен понять, как двигаться! "
+                    "text": "Здесь мы соединяем волшебство с наукой, создавая уникальных мастеров, способных овладеть как магией, так и технологиями."
+                },
+                {
+                    "text": "Но перед тем как ты сможешь двигаться дальше, давай освоим азы взаимодействия с этим миром."
                 },
                 {
                     "text": "Нажми W, чтобы двигаться вперед, S - вниз, A - влево, D - вправо."
@@ -21,122 +24,336 @@
                     "text": "Ещё наверняка тебе придётся здесь с кем-нибудь поговорить. Чтобы это получилось, подойди поближе к собеседнику, и нажми Е!"
                 },
                 {
-                    "text": "Всё понял? Отлично! Пойдём, поговорим с кем-нибудь!"
-                }
-            ]
-        },
-        "post": {
-            "id": 2,
-            "npc_name": "Гриша",
-            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
-            "lines": [
+                    "text": "Всё понял? Великолепно! Теперь ты готов начать своё путешествие по академии."
+                },
                 {
-                    "text": "Я уже объяснил, как двигаться. Удачи!"
-                }
-            ]
-        },
-        "next": "first_task",
-        "disappear": {
-            "id": 2,
-            "npc_name": "Гриша",
-            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
-            "lines": [
-                {
-                    "text": "Good luck! I'm out of here."
+                    "text": "Твоя главная задача — найти ректора, который расскажет тебе про испытания. Поспешим!"
                 }
             ]
         }
     },
-    "dmitri": {
+    "rector": {
         "main": {
             "id": 1,
-            "npc_name": "Дмитрий",
+            "npc_name": "Ректор",
             "npc_texture": "resources/textures/npc/2/down_idle/1.png",
             "lines": [
                 {
-                    "text": "О! Помощь! Ура!"
+                    "text": "Приветствую тебя, ученик. Сегодня тебя ждёт серия испытаний, которые проверят не только твою смекалку, но и научные знания."
+                },
+                {
+                    "text": "Магия без логики и науки бессильна. Ты готов пройти эти задачи и показать, на что способен?"
                 }
-                
-            ]
+            ],
+            "next": "player-rector-1"
         },
-        "post": {
+        "player-rector-1": {
             "id": 1,
-            "npc_name": "Дмитрий",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
-                    "text": "Можешь помочь мне с заданием?"
-                    
+                    "text": "Я готов! Какие задачи меня ждут?"
                 }
-            ]
+            ],
+            "next": "rector-1-2"
         },
-        "help_accepted": {
+        "rector-1-2": {
             "id": 2,
-            "npc_name": "Quest NPC",
+            "npc_name": "Ректор",
             "npc_texture": "resources/textures/npc/1/down_idle/1.png",
             "lines": [
                 {
-                    "text": "Спасибо! Вот задание."
-                }
-            ]
-        },
-        "help_refused": {
-            "id": 3,
-            "npc_name": "Quest NPC",
-            "npc_texture": "resources/textures/npc/quest_giver.png",
-            "lines": [
+                    "text": "Это станет сюрпризом. Но не переживай, каждое испытание откроет тебе новые горизонты."
+                },
                 {
-                    "text": "Ладно, возвращайся, когда будешь свободен."
+                    "text": "Твое первое задание уже ждет в зале с катапультой. Покажи, на что способен!"
                 }
             ]
         }
     },
-    "multi_npc_dialog": {
-        "dialog_1": {
+    "task-1": {
+        "main": {
             "id": 1,
-            "npc_name": "NPC1",
-            "npc_texture": "resources/textures/npc/npc1.png",
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
             "lines": [
                 {
-                    "text": "Hey there, Player! Have you seen NPC2 around?"
-                },
-                {
-                    "text": "We need to discuss something important."
+                    "text": "Вот и первая преграда. Эта стена выглядит непробиваемой. Как же её разрушить?"
                 }
             ],
-            "next": "dialog_2"
+            "next": "task-1-1"
         },
-        "dialog_2": {
+        "task1-1": {
+            "id": 1,
+            "npc_name": "Учитель магии",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Это не обычная стена. Она защищена магией древних духов и требует от тебя не только силы, но и точного расчёта."
+                },
+                {
+                    "text": "Твоя задача — настроить катапульту так, чтобы выстрел был точным. Учти угол и силу натяжения. Рассчитай траекторию, как учат в математике."
+                }
+            ]
+        },
+        "task-1-success": {
+            "id": 1,
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Получилось! Я правильно рассчитал траекторию!"
+                }
+            ],
+            "next": "task-1-success-2"
+        },
+        "task-1-success-2": {
+            "id": 1,
+            "npc_name": "Учитель магии",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Отлично, ученик. Ты проявил математическую смекалку, необходимую для инженера."
+                },
+                {
+                    "text": "Но впереди тебя ждут более сложные испытания. Продолжай путь вверх по башне."
+                }
+            ]
+        },
+        "task-1-fail": {
+            "id": 1,
+            "npc_name": "Учитель магии",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Не отчаивайся. Попробуй ещё раз. Подумай, как угол или сила натяжения могут изменить траекторию снаряда."
+                }
+            ]
+        }
+    },
+    "task-2-pre": {
+        "main": {
+            "id": 1,
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Это что, магический компьютер? И этот грифон - его страж?"
+                }
+            ],
+            "next": "task-2-details"
+        },
+        "task-2-details": {
+            "id": 1,
+            "npc_name": "Бит",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
+            "lines": [
+                {
+                    "text": "Да, да, я охраняю магический артефакт, связанный с числовой магией. Я храню здесь важные файлы, но я понимаю только двоичную систему."
+                },
+                {
+                    "text": "Помоги мне перевести адрес файла ХХХ в язык, который я пойму — в нули и единицы."
+                }
+            ]
+        },
+        "task-2-success": {
             "id": 2,
-            "npc_name": "NPC2",
-            "npc_texture": "resources/textures/npc/npc2.png",
+            "npc_name": "Бит",
+            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
             "lines": [
                 {
-                    "text": "I'm right here, NPC1. What did you want to talk about?"
-                },
-                {
-                    "text": "Is this about the Player's quest?"
+                    "text": "Ты просто волшебник чисел! Спасибо, теперь я могу передать файл дальше. А твой путь продолжается в башне!"
                 }
-            ],
-            "next": "dialog_3"
+            ]
         },
-        "dialog_3": {
-            "id": 3,
-            "npc_name": "NPC1",
-            "npc_texture": "resources/textures/npc/npc1.png",
+        "task-2-fail": {
+            "id": 2,
+            "npc_name": "Бит",
+            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
             "lines": [
                 {
-                    "text": "Yes, it's about the quest. Player, are you ready to start?"
+                    "text": "Нет! Это неправильное число. Я не могу найти файл!"
+                }
+            ]
+        }
+    },
+    "task-3": {
+        "main": {
+            "id": 1,
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Внизу эти опасные колючки. Как же мне безопасно спуститься?"
                 }
             ],
-            "options": [
+            "next": "task-3-details"
+        },
+        "task-3-details": {
+            "id": 1,
+            "npc_name": "Робот",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
+            "lines": [
                 {
-                    "text": "Yes, I'm ready.",
-                    "next": "dialog_4"
+                    "text": "Я ро-бот. Я могу помочь тебе убирать колючки, но мой алгоритм сломался. Я понимаю команды \"да\" и \"нет\"."
                 },
                 {
-                    "text": "No, I need more time.",
-                    "next": "dialog_5"
+                    "text": "Тебе нужно запрограммировать меня, чтобы я точно стрелял в нужные цели."
+                }
+            ]
+        },
+        "task-3-success": {
+            "id": 2,
+            "npc_name": "Робот",
+            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Отличная работа. Ты проявил себя как настоящий программист. Теперь ты можешь безопасно спуститься вниз."
+                }
+            ]
+        },
+        "task-3-fail": {
+            "id": 2,
+            "npc_name": "Робот",
+            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Исправь ошибку в условиях. Даже одно неверное утверждение может всё изменить."
+                }
+            ]
+        }
+    },
+    "task-4": {
+        "main": {
+            "id": 1,
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Спуститься с такой высоты?! А если я не успею раскрыть парашют вовремя?"
+                }
+            ],
+            "next": "task-4-details"
+        },
+        "task-4-details": {
+            "id": 1,
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Спокойно. Всё, что тебе нужно, — это рассчитать время падения и скорость, чтобы раскрыть парашют в нужный момент. Это задача для расчётов, так что готовь свою логику."
+                }
+            ]
+        },
+        "task-4-success": {
+            "id": 1,
+            "npc_name": "Наблюдающий",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Великолепно. Ты справился с задачей аэродинамики. Ты выполнил все задачи, отправляйся назад к ректору!"
+                }
+            ]
+        },
+        "task-4-fail": {
+            "id": 1,
+            "npc_name": "Наблюдающий",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Ничего страшного, ошибки — часть обучения. Главное, учиться на них."
+                }
+            ]
+        }
+    },
+    "rector-2": {
+        "main": {
+            "id": 1,
+            "npc_name": "Ректор",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Молодец, ученик. Ты справился со всеми испытаниями. Но впереди тебя ждёт финальный экзамен. Ты готов?"
+                }
+            ],
+            "next": "rector-2-1"
+        },
+        "rector-2-1": {
+            "id": 1,
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Я готов. Что нужно сделать?"
+                }
+            ],
+            "next": "rector-2-2"
+        },
+        "rector-2-2": {
+            "id": 1,
+            "npc_name": "Ректор",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Последнее испытание — программирование машины. Твоя задача — создать программу, которая обрабатывает данные."
+                },
+                {
+                    "text": "У тебя есть примитивные команды: циклы, сложение, вычитание. Используй их для того, чтобы машина делила чётные числа на два, а нечётные — умножала на три."
+                }
+            ]
+        },
+        "rector-2-success": {
+            "id": 1,
+            "npc_name": "Ректор",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Великолепно. Ты проявил себя как умелый программист и маг. Теперь ты готов к выбору своей профессии."
+                }
+            ]
+        },
+        "rector-2-fail": {
+            "id": 1,
+            "npc_name": "Ректор",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Не спеши. Программирование требует терпения. Попробуй ещё раз."
+                }
+            ]
+        }
+    },
+    "rector-final": {
+        "main": {
+            "id": 1,
+            "npc_name": "Ректор",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Ты завершил все испытания, доказал свои знания в магии, науке и логике. Теперь перед тобой стоит выбор: какую профессию ты хочешь освоить в нашем мире?"
+                }
+            ],
+            "next": "rector-final-1"
+        },
+        "rector-final-1": {
+            "id": 1,
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Я чувствую, что готов стать магом-инженером, объединяющим древнюю магию с современными науками."
+                }
+            ],
+            "next": "rector-final-2"
+        },
+        "rector-final-2": {
+            "id": 1,
+            "npc_name": "Ты",
+            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "lines": [
+                {
+                    "text": "Прекрасный выбор. Ты пройдёшь далеко. Магия и наука вместе сделают тебя великим мастером. Добро пожаловать в наш мир!"
                 }
             ]
         }
