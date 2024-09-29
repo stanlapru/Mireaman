@@ -61,23 +61,23 @@ class PlatformerWorld:
         interacted_image = './resources/textures/blocks/selected.png'
         # Add interactable objects
         interactable_data = [
-            {'pos': (300, 1500), 'object_id': 'math', 'initial_image': './resources/textures/blocks/math.png', 'interacted_image': interacted_image},
-            {'pos': (500, 1500), 'object_id': 'english', 'initial_image': './resources/textures/blocks/english.png', 'interacted_image': interacted_image},
-            {'pos': (700, 1500), 'object_id': 'biology', 'initial_image': './resources/textures/blocks/biology.png', 'interacted_image': interacted_image},
-            {'pos': (900, 1500), 'object_id': 'coding', 'initial_image': './resources/textures/blocks/coding.png', 'interacted_image': interacted_image},
-            {'pos': (1200, 1500), 'object_id': 'geography', 'initial_image': './resources/textures/blocks/geography.png', 'interacted_image': interacted_image},
-            {'pos': (1500, 1500), 'object_id': 'literature', 'initial_image': './resources/textures/blocks/literature.png', 'interacted_image': interacted_image},
-            {'pos': (1800, 1500), 'object_id': 'physics', 'initial_image': './resources/textures/blocks/physics.png', 'interacted_image': interacted_image},
-            {'pos': (2100, 1500), 'object_id': 'russian', 'initial_image': './resources/textures/blocks/russian.png', 'interacted_image': interacted_image},
-            {'pos': (2400, 1500), 'object_id': 'social', 'initial_image': './resources/textures/blocks/social.png', 'interacted_image': interacted_image},
-            {'pos': (2700, 1500), 'object_id': 'chemistry', 'initial_image': './resources/textures/blocks/chemistry.png', 'interacted_image': interacted_image},
+            {'pos': (900, 1700), 'object_id': 'math', 'initial_image': './resources/textures/blocks/math.png', 'interacted_image': interacted_image},
+            {'pos': (1100, 1700), 'object_id': 'english', 'initial_image': './resources/textures/blocks/english.png', 'interacted_image': interacted_image},
+            {'pos': (1300, 1700), 'object_id': 'biology', 'initial_image': './resources/textures/blocks/biology.png', 'interacted_image': interacted_image},
+            {'pos': (1500, 1700), 'object_id': 'coding', 'initial_image': './resources/textures/blocks/coding.png', 'interacted_image': interacted_image},
+            {'pos': (2100, 1700), 'object_id': 'geography', 'initial_image': './resources/textures/blocks/geography.png', 'interacted_image': interacted_image},
+            {'pos': (2300, 1700), 'object_id': 'literature', 'initial_image': './resources/textures/blocks/literature.png', 'interacted_image': interacted_image},
+            {'pos': (2500, 1700), 'object_id': 'physics', 'initial_image': './resources/textures/blocks/physics.png', 'interacted_image': interacted_image},
+            {'pos': (2700, 1700), 'object_id': 'russian', 'initial_image': './resources/textures/blocks/russian.png', 'interacted_image': interacted_image},
+            {'pos': (3500, 1700), 'object_id': 'social', 'initial_image': './resources/textures/blocks/social.png', 'interacted_image': interacted_image},
+            {'pos': (3700, 1700), 'object_id': 'chemistry', 'initial_image': './resources/textures/blocks/chemistry.png', 'interacted_image': interacted_image},
         ]
 
         for obj_data in interactable_data:
             InteractableObject(obj_data['pos'], [self.visible_sprites], self.obstacle_sprites, obj_data['object_id'], obj_data['initial_image'], obj_data['interacted_image'])
 
-        self.player = PlayerPlatformer((1200,1300),[self.visible_sprites], self.obstacle_sprites)
-        self.portal = Portal((4400, 1460), [self.visible_sprites, self.obstacle_sprites], self.player)
+        self.player = PlayerPlatformer((1200,1750),[self.visible_sprites], self.obstacle_sprites)
+        self.portal = Portal((4800, 1700), [self.visible_sprites, self.obstacle_sprites], self.player)
     
     def run(self):
         self.visible_sprites.custom_draw(self.player)
@@ -110,7 +110,7 @@ class YSortCamGroup(pygame.sprite.Group):
         self.half_width = self.display.get_size()[0] // 2
         self.half_height = self.display.get_size()[1] // 2
         self.offset = pygame.math.Vector2()
-        self.floor_surface = pygame.image.load("./resources/tmx/platformer/platformer.png")
+        self.floor_surface = pygame.transform.scale_by(pygame.image.load("./resources/tmx/platformer/platformer.png"),3)
         #self.scale_background(3)
         self.floor_rect = self.floor_surface.get_rect(topleft = (0,0))
 
