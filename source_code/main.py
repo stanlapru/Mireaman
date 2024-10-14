@@ -246,6 +246,7 @@ class Game:
                     sys.exit()
                 if event.type == pygame.MOUSEBUTTONDOWN and catapult_scr.dialog_box.dialog_active: # Advance dialog
                     catapult_scr.dialog_box.advance()
+                catapult_scr.task_overlay.handle_event(event)
             if catapult_scr.done == True:
                
                 self.run(False)

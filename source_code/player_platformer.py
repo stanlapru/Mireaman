@@ -24,6 +24,7 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.interact_time = pygame.time.get_ticks()
         self.colliding = False
         self.falling = False
+        self.is_task = False
         
         self.obstacle_sprites = obstacle_sprites
         self.selected_objects = []
@@ -56,40 +57,42 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.image = animation[int(self.frame_index)]
         self.rect = self.image.get_rect(center = self.hitbox.center)
     
-    def input(self, npcs):
+    def input(self, npcs, is_task):
         keys = pygame.key.get_pressed()
+        
+        if not is_task:
 
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            if self.colliding == True and self.falling == False:
-                self.vertical_vel = -2.5
-            # self.status = 'up'
-        elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.direction.y = 1
-            # self.status = 'down'
-        else:
-            self.direction.y = 0
-            
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.direction.x = -1
-            self.status = 'left'
-        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.direction.x = 1
-            self.status = 'right'
-        else:
-            self.direction.x = 0
-            
-        # interact
-        if keys[pygame.K_e] and not self.interacting:
-            for npc in npcs:
-                if npc.player_nearby:  # Check if an NPC is nearby
-                    self.interacting = True  # Start interaction
-                    npc.interacting = True  # Let the NPC know the interaction started
-                    self.dialog_active = True  # Show dialog
-                    self.direction.x = 0
-                    self.direction.y = 0
-                    break
-        elif not keys[pygame.K_e]:
-            self.interacting = False
+            if keys[pygame.K_UP] or keys[pygame.K_w]:
+                if self.colliding == True and self.falling == False:
+                    self.vertical_vel = -2.5
+                # self.status = 'up'
+            elif keys[pygame.K_DOWN] or keys[pygame.K_s]:
+                self.direction.y = 1
+                # self.status = 'down'
+            else:
+                self.direction.y = 0
+                
+            if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+                self.direction.x = -1
+                self.status = 'left'
+            elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+                self.direction.x = 1
+                self.status = 'right'
+            else:
+                self.direction.x = 0
+                
+            # interact
+            if keys[pygame.K_e] and not self.interacting:
+                for npc in npcs:
+                    if npc.player_nearby:  # Check if an NPC is nearby
+                        self.interacting = True  # Start interaction
+                        npc.interacting = True  # Let the NPC know the interaction started
+                        self.dialog_active = True  # Show dialog
+                        self.direction.x = 0
+                        self.direction.y = 0
+                        break
+            elif not keys[pygame.K_e]:
+                self.interacting = False
             
     def move(self,speed):
         self.vertical_vel += self.gravity
@@ -110,6 +113,10 @@ class PlayerPlatformer(pygame.sprite.Sprite):
 
         if self.vertical_vel > 5:
             self.vertical_vel = 5
+            
+        if self.is_task:
+            self.direction.y = 0
+            self.direction.x = 0
         
     def cooldowns(self):
         current_time = pygame.time.get_ticks()
@@ -151,8 +158,8 @@ class PlayerPlatformer(pygame.sprite.Sprite):
             #print('removed', object_id)
         
             
-    def update(self, npcs):
-        self.input(npcs)
+    def update(self, npcs, is_task):
+        self.input(npcs, is_task)
         self.cooldowns()
         self.get_status()
         self.animate()

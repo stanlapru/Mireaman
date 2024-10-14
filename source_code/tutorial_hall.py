@@ -96,7 +96,7 @@ class TutorialHall:
             if isinstance(sprite, NPCPlatformer):
                 sprite.update(self.player.rect.center)  # Pass player's position to NPC
             elif isinstance(sprite, PlayerPlatformer):
-                sprite.update(self.npc_list)
+                sprite.update(self.npc_list, False)
             else:
                 sprite.update()
         

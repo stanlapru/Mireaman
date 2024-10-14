@@ -20,11 +20,15 @@ class CatapultHall:
         self.screen = screen
         self.display_surface = pygame.display.get_surface()
         self.visible_sprites = YSortCamGroup()
+        self.initial_tiles = pygame.sprite.Group()
+        self.alternative_tiles = pygame.sprite.Group()
         self.obstacle_sprites = pygame.sprite.Group()
         self.data = data
         self.game = game
+        self.completed = False
         self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
         self.done = False
+        
         pygame.mixer.music.stop()
         pygame.mixer.music.load("./resources/audio/music/Empty (52 Kilobytes) SNES Cover [4mat] (256 kbps).mp3")
         pygame.mixer.music.play(-1)
@@ -40,16 +44,19 @@ class CatapultHall:
         # Pass dialog data to dialog box
         self.dialog_box.set_dialog_data(self.dialog_data)
         
+        self.task_overlay = TaskOverlay(screen, self.font, "Катапульта стреляет с начальной скоростью 30 м/с под углом 45 градусов к горизонту. Определи максимальную высоту полета груза, если сопротивление воздуха можно считать пренебрежимо малым. g = 10м/с.", "22,5", self.dialog_box)
+        
     def create_map(self):
         layouts = {
-            'boundary': import_csv_layout('./resources/tmx/hall2/hall2_collision_broken.csv'),
+            'boundary3': import_csv_layout('./resources/tmx/hall2/hall2_next.csv'),
+            'boundary2': import_csv_layout('./resources/tmx/hall2/hall2_collision_broken.csv'),
             'boundary': import_csv_layout('./resources/tmx/hall2/hall2_collision.csv'),
             'decorations': import_csv_layout('./resources/tmx/hall2/hall2_decorations.csv'),
             'decorations2': import_csv_layout('./resources/tmx/hall2/hall2_decorations2.csv'),
             'solids': import_csv_layout('./resources/tmx/hall2/hall2_background.csv'),
-            'solids': import_csv_layout('./resources/tmx/hall2/hall2_background_broken.csv'),
+            'solids2': import_csv_layout('./resources/tmx/hall2/hall2_background_broken.csv'),
             'wall': import_csv_layout('./resources/tmx/hall2/hall2_wall.csv'),
-            'wall': import_csv_layout('./resources/tmx/hall2/hall2_wall_broken.csv'),
+            'wall2': import_csv_layout('./resources/tmx/hall2/hall2_wall_broken.csv'),
         }
         graphics = {
             # 'overworld': import_folder('./resources/tmx/platformer/Assets/')
@@ -60,31 +67,29 @@ class CatapultHall:
         self.characters = pygame.sprite.Group()
         self.boundary_tiles = pygame.sprite.Group()
 
-        for style,layout in layouts.items():
-            for row_idx,row in enumerate(layout):
-                for col_idx,col in enumerate(row):
+        for style, layout in layouts.items():
+            for row_idx, row in enumerate(layout):
+                for col_idx, col in enumerate(row):
                     if col != '-1':
                         x = col_idx * TILESIZE
                         y = row_idx * TILESIZE
-                        # tile_index = int(col)
-                        # tile_surface = graphics['overworld'][tile_index]
-                        if style == 'boundary':
-                            TilePlatformer((x,y), [self.obstacle_sprites], 'tile_surface')
-                        if style == 'boundary2':
-                            TilePlatformer((x,y), [self.obstacle_sprites, self.boundary_tiles], 'tile_surface')
-                        # if style == 'decorations1' or style == 'decorations2' or style == 'decorations3':
-                        #     Tile((x,y), [self.visible_sprites], 'walkable')
-                        # if style == 'solids1' or style == 'solids2':
-                        #     Tile((x,y), [self.visible_sprites], 'solid')
-        #         if col == 'x':
-        #             Tile((x,y),[self.visible_sprites, self.obstacle_sprites])
-        #         if col == 'p':
+                        if style in ['boundary']:
+                            # Add to initial tiles
+                            tile = TilePlatformer((x, y), [self.obstacle_sprites], 'tile_surface')
+                            self.initial_tiles.add(tile)
+                        elif style in ['boundary2']:
+                            # Add to alternative tiles (but don't make them visible yet)
+                            tile = TilePlatformer((x, y), [self.obstacle_sprites], 'tile_surface')
+                        elif style in ['boundary3']:
+                            # Add to alternative tiles (but don't make them visible yet)
+                            tile = TilePlatformer((x, y), [self.obstacle_sprites, self.boundary_tiles], 'tile_surface')
+                            # self.alternative_tiles.add(tile)
 
         self.npc_list = [
-            NPCPlatformer((1500,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/4/down_idle/1.png', 'task-1'),
+            NPCPlatformer((3000,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/4/down_idle/1.png', 'task-1'),
         ]
-        
-        self.player = PlayerPlatformer((1200,1800),[self.visible_sprites], self.obstacle_sprites)
+        # 1200
+        self.player = PlayerPlatformer((3100,1800),[self.visible_sprites], self.obstacle_sprites)
         
         self.characters.add(self.player)
         for npc in self.npc_list:
@@ -98,16 +103,18 @@ class CatapultHall:
             if isinstance(sprite, NPCPlatformer):
                 sprite.update(self.player.rect.center)  # Pass player's position to NPC
             elif isinstance(sprite, PlayerPlatformer):
-                sprite.update(self.npc_list)
+                sprite.update(self.npc_list, self.task_overlay.show_overlay and not self.task_overlay.is_solved)
             else:
                 sprite.update()
         
-        # if not self.dialog_box.dialog_active:
-        #     self.player.input(self.npc_list)
         
-        # Check if player is interacting with any NPC
+        if not self.task_overlay.show_overlay and self.task_overlay.is_solved and not self.completed:
+            self.dialog_box.load_dialog('task-1', "task-1-success")
+            self.completed = True
+            self.switch_to_alternative_layout()
+            
         for npc in self.npc_list:
-            if npc.player_nearby and not self.dialog_box.dialog_active:
+            if npc.player_nearby and not self.dialog_box.dialog_active and not self.task_overlay.is_solved:
                 if pygame.key.get_pressed()[pygame.K_e]:
                     self.dialog_box.load_dialog(npc.dialog_id, "main")
                     self.interact_with_npc(npc.dialog_id)
@@ -120,6 +127,26 @@ class CatapultHall:
             self.done = True
             
         self.render_text(str(self.player.rect.x)+", "+str(self.player.rect.y), (8,8))
+        
+        if self.player.rect.x > 3200:
+            self.player.is_task = True
+            
+        self.task_overlay.update(self.player.rect.x)
+        
+        self.task_overlay.draw()
+        
+    def switch_to_alternative_layout(self):
+        """Switch the map from initial layout to alternative layout."""
+        # Remove all initial layout tiles from the visible sprite group
+        self.visible_sprites.remove(self.initial_tiles)
+        self.obstacle_sprites.remove(self.initial_tiles)
+
+        # Add alternative tiles to the visible sprite group
+        self.visible_sprites.add(self.alternative_tiles)
+        self.obstacle_sprites.add(self.alternative_tiles)
+        
+        self.visible_sprites.change_bg()
+            
             
     def interact_with_npc(self, npc_id):
         """Check dialog state and trigger the appropriate dialog."""
@@ -151,6 +178,9 @@ class YSortCamGroup(pygame.sprite.Group):
         self.floor_surface = pygame.transform.scale_by(pygame.image.load("./resources/tmx/tsx/hall2.png"),3)
         #self.scale_background(3)
         self.floor_rect = self.floor_surface.get_rect(topleft = (0,0))
+        
+    def change_bg(self):
+        self.floor_surface = pygame.transform.scale_by(pygame.image.load("./resources/tmx/tsx/hall2new.png"),3)
 
     def scale_background(self, scale_factor):
         width1, height1 = self.floor_surface.get_size()
@@ -168,3 +198,95 @@ class YSortCamGroup(pygame.sprite.Group):
             offset_pos = sprite.rect.topleft - self.offset
             self.display.blit(sprite.image, offset_pos)
         
+        
+class TaskOverlay:
+    def __init__(self, screen, font, task_text, correct_answer, dialog_box):
+        self.screen = screen
+        self.dialog_box = dialog_box
+        self.font = font
+        self.wrong = False
+        self.is_solved = False
+        self.task_text = task_text  # The text describing the task
+        self.correct_answer = correct_answer
+        self.input_text = ""  # To store the player's input
+        self.show_overlay = False  # Only display when player reaches x >= 3200
+        self.box_rect = pygame.Rect(0, 0, 400, 1280)  # Position of the black box
+        self.input_rect = pygame.Rect(400, 720-60, 1280-620, 60)  # Position of the input field
+        self.enter_button_rect = pygame.Rect(1280-220, 720-60, 220, 60)  # Enter button
+
+    def draw(self):
+        if not self.show_overlay:
+            return
+
+        # Draw black box for task description
+        pygame.draw.rect(self.screen, (0, 0, 0), self.box_rect)
+        # Draw text for the task, wrapped inside the black box
+        self.render_text(self.task_text, (self.box_rect.x + 10, self.box_rect.y + 10), self.box_rect.width - 20)
+
+        # Draw the input field
+        pygame.draw.rect(self.screen, (255, 255, 255), self.input_rect)
+        # Render the current input text inside the input field
+        input_surface = self.font.render(self.input_text, True, (0, 0, 0))
+        self.screen.blit(input_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
+
+        # Draw the Enter button
+        pygame.draw.rect(self.screen, (0, 255, 0), self.enter_button_rect)
+        button_text = self.font.render("Ввод", True, (0, 0, 0))
+        self.screen.blit(button_text, (self.enter_button_rect.x + 10, self.enter_button_rect.y + 5))
+        
+        if self.wrong:
+            self.dialog_box.render()
+        
+        if not self.dialog_box.dialog_active:
+            self.wrong = False
+
+    def render_text(self, text, position, wrap_width):
+        """Renders text with word wrapping."""
+        words = text.split(' ')
+        lines = []
+        current_line = ""
+        for word in words:
+            test_line = current_line + word + " "
+            if self.font.size(test_line)[0] <= wrap_width:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word + " "
+        lines.append(current_line)
+
+        for idx, line in enumerate(lines):
+            line_surface = self.font.render(line, True, (255, 255, 255))
+            self.screen.blit(line_surface, (position[0], position[1] + idx * 30))
+
+    def handle_event(self, event):
+        if not self.show_overlay:
+            return
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_BACKSPACE:
+                self.input_text = self.input_text[:-1]  # Handle backspace
+            elif event.key == pygame.K_RETURN:
+                self.check_answer()
+            else:
+                self.input_text += event.unicode  # Add typed character to input text
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.enter_button_rect.collidepoint(event.pos):
+                self.check_answer()
+
+    def check_answer(self):
+        """Check if the entered answer is correct."""
+        if self.input_text.strip().lower() == self.correct_answer.lower():
+            print("Correct Answer!")
+            self.is_solved = True
+        else:
+            self.wrong = True
+            self.dialog_box.load_dialog('task-1','task-1-fail')
+            self.input_text = ""
+
+    def update(self, player_x):
+        """Show the overlay when player reaches x >= 3200."""
+        if player_x >= 3200 and not self.is_solved:
+            self.show_overlay = True
+        else:
+            self.show_overlay = False
