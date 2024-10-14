@@ -81,8 +81,7 @@ class CatapultHall:
         #         if col == 'p':
 
         self.npc_list = [
-            NPCPlatformer((1500,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/1/down_idle/1.png', 'tutorial-npc'),
-            NPCPlatformer((1600,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/9/down_idle/1.png', 'rector')
+            NPCPlatformer((1500,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/4/down_idle/1.png', 'task-1'),
         ]
         
         self.player = PlayerPlatformer((1200,1800),[self.visible_sprites], self.obstacle_sprites)
@@ -119,6 +118,8 @@ class CatapultHall:
             
         if pygame.sprite.spritecollide(self.player, self.boundary_tiles, False):
             self.done = True
+            
+        self.render_text(str(self.player.rect.x)+", "+str(self.player.rect.y), (8,8))
             
     def interact_with_npc(self, npc_id):
         """Check dialog state and trigger the appropriate dialog."""

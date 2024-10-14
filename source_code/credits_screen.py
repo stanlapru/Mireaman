@@ -13,7 +13,7 @@ class CreditsScreen:
         self.initialize_credits()
         
     def initialize_credits(self):
-        credits_list = ["Мир грифонов"," ---------- ","Разработка - Станислав Лапутин", "Руководитель - Екатерина Евдокимова", " ---------- ", "Музыка", " --- ", "Станислав Лапутин - Stasis",
+        credits_list = ["Мир грифонов"," ---------- ","Разработка - Станислав Лапутин", "Руководитель - Екатерина Евдокимова", "Арт - Юрий Лапутин", " ---------- ", "Музыка", " --- ", "Станислав Лапутин - Stasis",
                         "Станислав Лапутин - tutorial", "Станислав Лапутин - BAP2HA",
                     "Kevin MacLeod - Cipher", "Kevin MacLeod - Darkest Child", "Kevin MacLeod - Divertissement Pizzicato", "Cerror - Maandban", "coda - test1.nsf", "RednGreen - Cursed Cathedral",
                     "Ein Fall Fur Zwei Theme (1981)", "Lost Transmission (SNES original)", "RushJet1","Entering Graciously", "4mat - Empty", "DubMood - Team Haze Chiptune", " ", "---", " ",

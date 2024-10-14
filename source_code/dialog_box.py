@@ -69,6 +69,7 @@ class DialogBox:
 
     def load_dialog(self, npc_id, dialog_section):
         """Loads dialog text, NPC name, and image based on dialog ID."""
+        self.npc_id = npc_id
         self.dialog_index = 0  # Reset the dialog to the first line
         dialog = self.dialog_data.get(npc_id, {}).get(dialog_section)
 
@@ -117,7 +118,7 @@ class DialogBox:
                 
                 if 'next' in self.current_dialog_root:
                     next_section = self.current_dialog_root['next']
-                    self.load_dialog("rector", next_section)  # Continue to the next section
+                    self.load_dialog(self.npc_id, next_section)  # Continue to the next section
                 else:
                     # No more dialog; end conversation
                     self.dialog_active = False

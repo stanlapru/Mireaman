@@ -36,7 +36,7 @@
         "main": {
             "id": 1,
             "npc_name": "Ректор",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/npc/9/down_idle/1.png",
             "lines": [
                 {
                     "text": "Приветствую тебя, ученик. Сегодня тебя ждёт серия испытаний, которые проверят не только твою смекалку, но и научные знания."
@@ -61,7 +61,7 @@
         "rector-1-2": {
             "id": 2,
             "npc_name": "Ректор",
-            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+            "npc_texture": "resources/textures/npc/9/down_idle/1.png",
             "lines": [
                 {
                     "text": "Это станет сюрпризом. Но не переживай, каждое испытание откроет тебе новые горизонты."
@@ -76,18 +76,18 @@
         "main": {
             "id": 1,
             "npc_name": "Ты",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
                     "text": "Вот и первая преграда. Эта стена выглядит непробиваемой. Как же её разрушить?"
                 }
             ],
-            "next": "task-1-1"
+            "next": "task1-1"
         },
         "task1-1": {
             "id": 1,
             "npc_name": "Учитель магии",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/npc/4/down_idle/1.png",
             "lines": [
                 {
                     "text": "Это не обычная стена. Она защищена магией древних духов и требует от тебя не только силы, но и точного расчёта."
@@ -100,7 +100,7 @@
         "task-1-success": {
             "id": 1,
             "npc_name": "Ты",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
                     "text": "Получилось! Я правильно рассчитал траекторию!"
@@ -111,7 +111,7 @@
         "task-1-success-2": {
             "id": 1,
             "npc_name": "Учитель магии",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/npc/4/down_idle/1.png",
             "lines": [
                 {
                     "text": "Отлично, ученик. Ты проявил математическую смекалку, необходимую для инженера."
@@ -124,7 +124,7 @@
         "task-1-fail": {
             "id": 1,
             "npc_name": "Учитель магии",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/npc/4/down_idle/1.png",
             "lines": [
                 {
                     "text": "Не отчаивайся. Попробуй ещё раз. Подумай, как угол или сила натяжения могут изменить траекторию снаряда."
@@ -136,7 +136,7 @@
         "main": {
             "id": 1,
             "npc_name": "Ты",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
                     "text": "Это что, магический компьютер? И этот грифон - его страж?"
@@ -182,7 +182,7 @@
         "main": {
             "id": 1,
             "npc_name": "Ты",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
                     "text": "Внизу эти опасные колючки. Как же мне безопасно спуститься?"
@@ -228,7 +228,7 @@
         "main": {
             "id": 1,
             "npc_name": "Ты",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
                     "text": "Спуститься с такой высоты?! А если я не успею раскрыть парашют вовремя?"
@@ -282,7 +282,7 @@
         "rector-2-1": {
             "id": 1,
             "npc_name": "Ты",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
                     "text": "Я готов. Что нужно сделать?"
@@ -339,7 +339,7 @@
         "rector-final-1": {
             "id": 1,
             "npc_name": "Ты",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
                     "text": "Я чувствую, что готов стать магом-инженером, объединяющим древнюю магию с современными науками."
@@ -350,7 +350,7 @@
         "rector-final-2": {
             "id": 1,
             "npc_name": "Ты",
-            "npc_texture": "resources/textures/npc/2/down_idle/1.png",
+            "npc_texture": "resources/textures/player/down_idle/down1.png",
             "lines": [
                 {
                     "text": "Прекрасный выбор. Ты пройдёшь далеко. Магия и наука вместе сделают тебя великим мастером. Добро пожаловать в наш мир!"

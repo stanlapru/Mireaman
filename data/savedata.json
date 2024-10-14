@@ -18,6 +18,10 @@
         },
         "rector": {
             "dialog_seen": true
+        },
+        "task-1": {
+            "dialog_seen": true
         }
-    }
+    },
+    "sound_on": false
 }
