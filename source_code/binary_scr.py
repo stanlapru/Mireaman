@@ -119,7 +119,7 @@ class BinaryHall:
         if pygame.sprite.spritecollide(self.player, self.boundary_tiles, False):
             self.done = True
             
-        self.render_text(str(self.player.rect.x)+", "+str(self.player.rect.y), (8,8))
+        # self.render_text(str(self.player.rect.x)+", "+str(self.player.rect.y), (8,8))
         
         if self.player.rect.x > 1680:
             self.player.is_task = True

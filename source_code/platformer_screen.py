@@ -83,7 +83,7 @@ class PlatformerWorld:
         self.visible_sprites.custom_draw(self.player)
         for sprite in self.visible_sprites:
             if isinstance(sprite, PlayerPlatformer):
-                sprite.update([])
+                sprite.update([], False)
             else:
                 sprite.update()
         self.check_interactable_hover()
@@ -95,7 +95,7 @@ class PlatformerWorld:
         self.screen.blit(text_surface, text_rect)
 
     def draw(self):
-        self.render_text(str(self.world_mouse_pos), (8,50))
+        # self.render_text(str(self.world_mouse_pos), (8,50))
         self.render_text("Выбраны:", (8, 8))
         box_start_x = 200
         box_start_y = 8

@@ -128,9 +128,9 @@ class World:
             self.display_surface.fill('#1E7CB7')
             self.run_world()
             
-            text_surface = self.font.render(str(self.player.rect.x)+","+str(self.player.rect.y), True, pygame.Color('white'))
-            rect = text_surface.get_rect(topleft=(1,1))
-            self.display_surface.blit(text_surface, rect)
+            # text_surface = self.font.render(str(self.player.rect.x)+","+str(self.player.rect.y), True, pygame.Color('white'))
+            # rect = text_surface.get_rect(topleft=(1,1))
+            # self.display_surface.blit(text_surface, rect)
         
             pygame.display.update()
 
