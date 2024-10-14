@@ -11,7 +11,7 @@
     "demo_mode": false,
     "width": 1280,
     "height": 720,
-    "current_screen": "catapult_hall",
+    "current_screen": "binary_hall",
     "npc_interactions": {
         "tutorial-npc": {
             "dialog_seen": true
@@ -20,6 +20,9 @@
             "dialog_seen": true
         },
         "task-1": {
+            "dialog_seen": true
+        },
+        "task-2-pre": {
             "dialog_seen": true
         }
     },

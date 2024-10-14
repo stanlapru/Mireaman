@@ -147,20 +147,20 @@
         "task-2-details": {
             "id": 1,
             "npc_name": "Бит",
-            "npc_texture": "resources/textures/player/down_idle/down1.png",
+            "npc_texture": "resources/textures/npc/12/down_idle/1.png",
             "lines": [
                 {
                     "text": "Да, да, я охраняю магический артефакт, связанный с числовой магией. Я храню здесь важные файлы, но я понимаю только двоичную систему."
                 },
                 {
-                    "text": "Помоги мне перевести адрес файла ХХХ в язык, который я пойму — в нули и единицы."
+                    "text": "Помоги мне перевести адрес файла 164 в язык, который я пойму — в нули и единицы."
                 }
             ]
         },
         "task-2-success": {
             "id": 2,
             "npc_name": "Бит",
-            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+            "npc_texture": "resources/textures/npc/12/down_idle/1.png",
             "lines": [
                 {
                     "text": "Ты просто волшебник чисел! Спасибо, теперь я могу передать файл дальше. А твой путь продолжается в башне!"
@@ -170,7 +170,7 @@
         "task-2-fail": {
             "id": 2,
             "npc_name": "Бит",
-            "npc_texture": "resources/textures/npc/1/down_idle/1.png",
+            "npc_texture": "resources/textures/npc/12/down_idle/1.png",
             "lines": [
                 {
                     "text": "Нет! Это неправильное число. Я не могу найти файл!"

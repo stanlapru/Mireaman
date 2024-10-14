@@ -9,6 +9,7 @@ from credits_screen import CreditsScreen
 from error_screen import ErrorScreen
 from platformer_screen import PlatformerWorld
 from tutorial_hall import TutorialHall
+from binary_scr import BinaryHall
 from catapult_scr import CatapultHall
 from transition_screen import PortalScreen
 from problems.ict.ict1 import ICTone
@@ -25,6 +26,7 @@ class Game:
             'width': 1280,
             'height': 720,
             'npc_interactions': {},
+            'sound_on': False,
         }
         
         try: 
@@ -163,6 +165,8 @@ class Game:
                                 self.tutorial_hall()
                             if data.get('current_screen') == 'catapult_hall':
                                 self.catapult_hall()
+                            if data.get('current_screen') == 'binary_hall':
+                                self.binary_hall()
                         if main_screen.buttons[3].is_clicked(event.pos): # credits
                             running = False
                             self.credits_screen()
@@ -248,9 +252,33 @@ class Game:
                     catapult_scr.dialog_box.advance()
                 catapult_scr.task_overlay.handle_event(event)
             if catapult_scr.done == True:
+                self.savedata['current_screen'] = 'binary_hall'
+                with open('./data/savedata.json', 'w') as store_file: 
+                    json.dump(self.savedata, store_file, indent=4) 
+                self.binary_hall()
+            catapult_scr.run()
+            pygame.display.update()
+            self.clock.tick(FPS)
+            
+    def binary_hall(self):
+        binary_scr = BinaryHall(self.screen, self.savedata, self)
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.pause_screen()
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN and binary_scr.dialog_box.dialog_active: # Advance dialog
+                    binary_scr.dialog_box.advance()
+                binary_scr.task_overlay.handle_event(event)
+            if binary_scr.done == True:
                
                 self.run(False)
-            catapult_scr.run()
+            binary_scr.run()
             pygame.display.update()
             self.clock.tick(FPS)
     

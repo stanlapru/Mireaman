@@ -79,7 +79,7 @@ class DialogBox:
             self.update_current_dialog()
             self.npc_name = dialog['npc_name']
             self.npc_image = pygame.image.load(dialog['npc_texture']).convert_alpha()
-            self.npc_image = pygame.transform.scale(self.npc_image, (64, 64))  # Adjust image size as needed
+            self.npc_image = pygame.transform.scale_by(self.npc_image, 1)  # Adjust image size as needed
             self.dialog_active = True  # Set dialog active
         else:
             print(f"Dialog section '{dialog_section}' for NPC '{npc_id}' not found.")
