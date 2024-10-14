@@ -15,6 +15,8 @@ class InteractableObject(pygame.sprite.Sprite):
         # Add to the obstacle group for collision detection
         self.obstacle_sprites = obstacle_sprites
         self.obstacle_sprites.add(self)
+        
+        print(object_id, self.rect.x, self.rect.y)
 
     def interact(self):
         if not self.interacted:
@@ -24,3 +26,8 @@ class InteractableObject(pygame.sprite.Sprite):
             self.image = self.initial_image
             self.interacted = False
         return self.object_id
+    
+    def is_hovered(self, mouse_pos):
+        """Returns True if the mouse is hovering over the object."""
+        print(self.object_id)
+        return self.rect.collidepoint(mouse_pos)

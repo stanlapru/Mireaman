@@ -8,6 +8,8 @@ from start_screen import StartScreen
 from credits_screen import CreditsScreen
 from error_screen import ErrorScreen
 from platformer_screen import PlatformerWorld
+from tutorial_hall import TutorialHall
+from catapult_scr import CatapultHall
 from transition_screen import PortalScreen
 from problems.ict.ict1 import ICTone
 
@@ -30,7 +32,7 @@ class Game:
             with open('./data/savedata.json') as load_file: 
                 self.savedata = json.load(load_file) 
                 self.scr_width = load_file.read()
-        except FileNotFoundError: 
+        except: 
             print('No savefile found. Creating new one.')
             # create the file and store initial values 
             with open('./data/savedata.json', 'w') as store_file: 
@@ -155,7 +157,12 @@ class Game:
                             self.platformer_screen()
                         if main_screen.buttons[1].is_clicked(event.pos): # load existing game
                             running = False
-                            self.run(True) # load
+                            with open('./data/savedata.json', 'r') as file:
+                                data = json.load(file)
+                            if data.get('current_screen') == 'tutorial_hall':
+                                self.tutorial_hall()
+                            if data.get('current_screen') == 'catapult_hall':
+                                self.catapult_hall()
                         if main_screen.buttons[3].is_clicked(event.pos): # credits
                             running = False
                             self.credits_screen()
@@ -181,6 +188,7 @@ class Game:
                 self.portal_screen()
             self.screen.fill('#1E7CB7')
             platformer_world.run()
+            platformer_world.check_interactable_hover()
             pygame.display.update()
             self.clock.tick(FPS)
 
@@ -195,8 +203,53 @@ class Game:
                     pygame.quit()
                     sys.exit()
             if portal_scr.done == True:
-                self.run(False)      
+                self.tutorial_hall()
             portal_scr.run()
+            pygame.display.update()
+            self.clock.tick(FPS)
+    
+    def tutorial_hall(self):
+        tutorial_scr = TutorialHall(self.screen, self.savedata, self)
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.pause_screen()
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN and tutorial_scr.dialog_box.dialog_active: # Advance dialog
+                    tutorial_scr.dialog_box.advance()
+                
+            if tutorial_scr.done == True:
+                self.savedata['current_screen'] = 'catapult_hall'
+                with open('./data/savedata.json', 'w') as store_file: 
+                    json.dump(self.savedata, store_file, indent=4) 
+                self.catapult_hall()
+            tutorial_scr.run()
+            pygame.display.update()
+            self.clock.tick(FPS)
+            
+    def catapult_hall(self):
+        catapult_scr = CatapultHall(self.screen, self.savedata, self)
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.pause_screen()
+                if event.type == pygame.QUIT:
+                    running = False
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN and catapult_scr.dialog_box.dialog_active: # Advance dialog
+                    catapult_scr.dialog_box.advance()
+            if catapult_scr.done == True:
+               
+                self.run(False)
+            catapult_scr.run()
             pygame.display.update()
             self.clock.tick(FPS)
     

@@ -67,45 +67,71 @@ class DialogBox:
         return wrapped_lines
 
 
-    def load_dialog(self, dialog_id):
+    def load_dialog(self, npc_id, dialog_section):
         """Loads dialog text, NPC name, and image based on dialog ID."""
         self.dialog_index = 0  # Reset the dialog to the first line
-
-        # Split dialog_id to access nested dialog data
-        parts = dialog_id.split('.')
-        try:
-            dialog = self.dialog_data.get(parts[0], {}).get(parts[1], None)
-            print(dialog)
-        except IndexError:
-            dialog = self.dialog_data.get('main', {})
+        dialog = self.dialog_data.get(npc_id, {}).get(dialog_section)
 
         if dialog:
-            # Load the dialog lines, NPC name, and texture
-            self.current_dialog = dialog['lines']  # List of dialog strings
+            self.current_dialog_root = dialog
+            self.current_dialog = dialog['lines']
             self.update_current_dialog()
             self.npc_name = dialog['npc_name']
             self.npc_image = pygame.image.load(dialog['npc_texture']).convert_alpha()
-            self.npc_image = pygame.transform.scale(self.npc_image, (64, 64))  # Scale the image to fit
-            self.dialog_active = True
+            self.npc_image = pygame.transform.scale(self.npc_image, (64, 64))  # Adjust image size as needed
+            self.dialog_active = True  # Set dialog active
+        else:
+            print(f"Dialog section '{dialog_section}' for NPC '{npc_id}' not found.")
 
     def update_current_dialog(self):
         """Updates the currently displayed dialog text and handles wrapping."""
-        if self.current_dialog and self.dialog_index < len(self.current_dialog):
-            # Extract the text from the current dialog line (which is a dictionary)
-            current_line = self.current_dialog[self.dialog_index]
-            if isinstance(current_line, dict) and 'text' in current_line:
-                wrapped_text = self.wrap_text(current_line['text'])  # Correctly access 'text' value
-                self.displayed_text = wrapped_text  # Store the wrapped lines for rendering
+        # if self.current_dialog and self.dialog_index < len(self.current_dialog):
+        #     # Extract the text from the current dialog line (which is a dictionary)
+        #     current_line = self.current_dialog[self.dialog_index]
+        #     if isinstance(current_line, dict) and 'text' in current_line:
+        #         wrapped_text = self.wrap_text(current_line['text'])  # Correctly access 'text' value
+        #         self.displayed_text = wrapped_text  # Store the wrapped lines for rendering
+        #     else:
+        #         print(f"Error: Current dialog line is not properly formatted: {current_line}")
+        # else:
+        #     print("Dialog has finished.")
+        """Move to the next dialog line or dialog section if needed."""
+        if self.current_dialog:
+            # Check if we're at the end of the current dialog lines
+            if self.dialog_index < len(self.current_dialog):
+                current_line = self.current_dialog[self.dialog_index]
+                if isinstance(current_line, dict) and 'text' in current_line:
+                    wrapped_text = self.wrap_text(current_line['text'])  # Correctly access 'text' value
+                    self.displayed_text = wrapped_text  # Store the wrapped lines for rendering
+                else:
+                    print(f"Error: Current dialog line is not properly formatted: {current_line}")
+                    
             else:
-                print(f"Error: Current dialog line is not properly formatted: {current_line}")
+                self.dialog_index = 1000
+                
+            print(self.dialog_index)
+            if self.dialog_index == 1000:
+            
+                # We're at the end of the current dialog, check if there's a 'next' section
+                print(self.current_dialog, self.current_dialog_root)
+                
+                if 'next' in self.current_dialog_root:
+                    next_section = self.current_dialog_root['next']
+                    self.load_dialog("rector", next_section)  # Continue to the next section
+                else:
+                    # No more dialog; end conversation
+                    self.dialog_active = False
+                    self.current_dialog = None
+                    self.current_dialog_root = None
+                    print("End of dialog.")
         else:
-            print("Dialog has finished.")
+            print("No active dialog to update.")
 
 
     def advance(self):
         """Advance to the next line of the dialog."""
         if self.current_dialog:
-            if self.dialog_index < len(self.current_dialog) - 1:
+            if self.dialog_index < len(self.current_dialog) :
                 # Move to the next line
                 self.dialog_index += 1
                 self.update_current_dialog()
@@ -129,11 +155,15 @@ class DialogBox:
     def mark_dialog_as_seen(self, npc_id):
         """Mark the current dialog as seen in the save data."""
         # Ensure the NPC has an entry in the savedata.json
+
+        # if npc_id not in self.data['npc_interactions']:
+        #     self.data['npc_interactions'][npc_id] = {'dialog_seen': False}
         if npc_id not in self.data['npc_interactions']:
             self.data['npc_interactions'][npc_id] = {'dialog_seen': False}
 
-        # Mark the dialog as seen and possibly advance the dialog_id
+        # Set dialog_seen to True
         self.data['npc_interactions'][npc_id]['dialog_seen'] = True
+
 
         # Save the updated game data to the file
         self.save_game_data()

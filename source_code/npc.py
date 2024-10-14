@@ -15,6 +15,7 @@ class NPC(pygame.sprite.Sprite):
         self.frame_index = 0
         self.animation_speed = 0.05
         self.dialog_id = dialog_id
+        self.player_nearby = False
   
         self.direction = pygame.math.Vector2()
         self.speed = 5

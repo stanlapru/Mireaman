@@ -1,21 +1,22 @@
 {
-    "pos_x": 426,
-    "pos_y": 742,
+    "pos_x": 1200,
+    "pos_y": 1300,
     "subjects": [
-        "russian",
-        "social",
-        "chemistry"
+        "coding",
+        "english",
+        "math",
+        "physics"
     ],
     "fps": 60,
     "demo_mode": false,
     "width": 1280,
     "height": 720,
-    "sound_on": false,
+    "current_screen": "catapult_hall",
     "npc_interactions": {
         "tutorial-npc": {
             "dialog_seen": true
         },
-        "dmitri": {
+        "rector": {
             "dialog_seen": true
         }
     }

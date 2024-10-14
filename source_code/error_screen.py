@@ -15,7 +15,7 @@ class ErrorScreen:
     def initialize_error(self):
         error_list = error_list = ["RUNTIME ERROR! Please restart!",'',"--- Exception Details ---",self.error]
         for i, line in enumerate(error_list):
-            s = self.font.render(line, 1, (255, 255, 255))
+            s = self.font.render(str(line), 1, (255, 255, 255))
             r = s.get_rect(x=self.game.get_rect().left, y=self.game.get_rect().top + i * 45)
             self.texts.append((r, s))
             

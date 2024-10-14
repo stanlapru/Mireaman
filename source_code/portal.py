@@ -20,11 +20,13 @@ class Portal(pygame.sprite.Sprite):
             'demo_mode': False,
             'width': 1280,
             'height': 720,
+            'current_screen': 'tutorial_hall',
+            'npc_interactions': {},
         }
 
     def save_selected_subjects(self):
         with open('./data/savedata.json', 'w') as file:
-            json.dump(self.savedata, file)
+            json.dump(self.savedata, file, indent=4)
 
     def check_collision(self):
         if self.rect.colliderect(self.player.rect) and len(self.player.selected_objects) != 0:

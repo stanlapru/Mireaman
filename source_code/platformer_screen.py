@@ -81,8 +81,13 @@ class PlatformerWorld:
     
     def run(self):
         self.visible_sprites.custom_draw(self.player)
+        for sprite in self.visible_sprites:
+            if isinstance(sprite, PlayerPlatformer):
+                sprite.update([])
+            else:
+                sprite.update()
+        self.check_interactable_hover()
         self.draw()
-        self.visible_sprites.update()
 
     def render_text(self, text, position):
         text_surface = self.font.render(text, True, (255, 255, 255))
@@ -90,6 +95,7 @@ class PlatformerWorld:
         self.screen.blit(text_surface, text_rect)
 
     def draw(self):
+        self.render_text(str(self.world_mouse_pos), (8,50))
         self.render_text("Выбраны:", (8, 8))
         box_start_x = 200
         box_start_y = 8
@@ -102,6 +108,17 @@ class PlatformerWorld:
             position = (box_start_x, box_start_y)
             self.screen.blit(image, position)
             box_start_x += box_size + spacing
+        
+    def check_interactable_hover(self):
+        """Check for mouse hover and render object_id when hovering over an interactable object."""
+        mouse_pos = pygame.mouse.get_pos()
+        world_mouse_x = mouse_pos[0] + self.visible_sprites.offset.x
+        world_mouse_y = mouse_pos[1] + self.visible_sprites.offset.y
+        self.world_mouse_pos = (int(world_mouse_x), int(world_mouse_y))
+        for interactable_object in self.interactable_objects:
+            if interactable_object.is_hovered(self.world_mouse_pos):
+                object_id_text = self.font.render(interactable_object.object_id, True, (255, 255, 255))  # White text
+                self.render_text(object_id_text, (mouse_pos[0] + 10, mouse_pos[1]))
         
 class YSortCamGroup(pygame.sprite.Group):
     def __init__(self):

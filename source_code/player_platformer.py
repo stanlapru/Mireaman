@@ -21,7 +21,7 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.vertical_vel = 0
         self.interacting = False
         self.interact_cd = 200
-        self.interact_time = None
+        self.interact_time = pygame.time.get_ticks()
         self.colliding = False
         self.falling = False
         
@@ -56,7 +56,7 @@ class PlayerPlatformer(pygame.sprite.Sprite):
         self.image = animation[int(self.frame_index)]
         self.rect = self.image.get_rect(center = self.hitbox.center)
     
-    def input(self):
+    def input(self, npcs):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_UP] or keys[pygame.K_w]:
@@ -80,8 +80,16 @@ class PlayerPlatformer(pygame.sprite.Sprite):
             
         # interact
         if keys[pygame.K_e] and not self.interacting:
-            self.interacting = True
-            self.interact_time = pygame.time.get_ticks()
+            for npc in npcs:
+                if npc.player_nearby:  # Check if an NPC is nearby
+                    self.interacting = True  # Start interaction
+                    npc.interacting = True  # Let the NPC know the interaction started
+                    self.dialog_active = True  # Show dialog
+                    self.direction.x = 0
+                    self.direction.y = 0
+                    break
+        elif not keys[pygame.K_e]:
+            self.interacting = False
             
     def move(self,speed):
         self.vertical_vel += self.gravity
@@ -143,8 +151,8 @@ class PlayerPlatformer(pygame.sprite.Sprite):
             #print('removed', object_id)
         
             
-    def update(self):
-        self.input()
+    def update(self, npcs):
+        self.input(npcs)
         self.cooldowns()
         self.get_status()
         self.animate()
