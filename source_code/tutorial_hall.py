@@ -79,7 +79,7 @@ class TutorialHall:
 
         self.npc_list = [
             NPCPlatformer((1500,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/1/down_idle/1.png', 'tutorial-npc'),
-            NPCPlatformer((1600,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/9/down_idle/1.png', 'rector')
+            NPCPlatformer((2000,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/9/down_idle/1.png', 'rector')
         ]
         
         self.player = PlayerPlatformer((1200,1800),[self.visible_sprites], self.obstacle_sprites)

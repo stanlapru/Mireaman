@@ -154,7 +154,7 @@ class Game:
                     #     running = False
                     #     self.run(False) # new
                     if not main_screen.show_resolution and not main_screen.show_settings:
-                        if main_screen.buttons[0].is_clicked(event.pos): # new game; platformer selection
+                        if main_screen.control_button.is_clicked(event.pos): # new game; platformer selection
                             running = False
                             self.platformer_screen()
                         if main_screen.buttons[1].is_clicked(event.pos): # load existing game

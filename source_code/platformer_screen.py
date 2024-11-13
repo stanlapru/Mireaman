@@ -61,33 +61,37 @@ class PlatformerWorld:
         interacted_image = './resources/textures/blocks/selected.png'
         # Add interactable objects
         interactable_data = [
-            {'pos': (900, 1700), 'object_id': 'math', 'initial_image': './resources/textures/blocks/math.png', 'interacted_image': interacted_image},
-            {'pos': (1100, 1700), 'object_id': 'english', 'initial_image': './resources/textures/blocks/english.png', 'interacted_image': interacted_image},
-            {'pos': (1300, 1700), 'object_id': 'biology', 'initial_image': './resources/textures/blocks/biology.png', 'interacted_image': interacted_image},
-            {'pos': (1500, 1700), 'object_id': 'coding', 'initial_image': './resources/textures/blocks/coding.png', 'interacted_image': interacted_image},
-            {'pos': (2100, 1700), 'object_id': 'geography', 'initial_image': './resources/textures/blocks/geography.png', 'interacted_image': interacted_image},
-            {'pos': (2300, 1700), 'object_id': 'literature', 'initial_image': './resources/textures/blocks/literature.png', 'interacted_image': interacted_image},
-            {'pos': (2500, 1700), 'object_id': 'physics', 'initial_image': './resources/textures/blocks/physics.png', 'interacted_image': interacted_image},
-            {'pos': (2700, 1700), 'object_id': 'russian', 'initial_image': './resources/textures/blocks/russian.png', 'interacted_image': interacted_image},
-            {'pos': (3500, 1700), 'object_id': 'social', 'initial_image': './resources/textures/blocks/social.png', 'interacted_image': interacted_image},
-            {'pos': (3700, 1700), 'object_id': 'chemistry', 'initial_image': './resources/textures/blocks/chemistry.png', 'interacted_image': interacted_image},
+            {'pos': (900, 1700), 'object_id': 'math', 'initial_image': './resources/textures/blocks/math.png', 'interacted_image': interacted_image, 'object_id_rus': 'Математика'},
+            {'pos': (1100, 1700), 'object_id': 'english', 'initial_image': './resources/textures/blocks/english.png', 'interacted_image': interacted_image, 'object_id_rus': 'Иностранный язык'},
+            {'pos': (1300, 1700), 'object_id': 'biology', 'initial_image': './resources/textures/blocks/biology.png', 'interacted_image': interacted_image, 'object_id_rus': 'Биология'},
+            {'pos': (1500, 1700), 'object_id': 'coding', 'initial_image': './resources/textures/blocks/coding.png', 'interacted_image': interacted_image, 'object_id_rus': 'Программирование'},
+            {'pos': (2100, 1700), 'object_id': 'geography', 'initial_image': './resources/textures/blocks/geography.png', 'interacted_image': interacted_image, 'object_id_rus': 'География'},
+            {'pos': (2300, 1700), 'object_id': 'literature', 'initial_image': './resources/textures/blocks/literature.png', 'interacted_image': interacted_image, 'object_id_rus': 'Литература'},
+            {'pos': (2500, 1700), 'object_id': 'physics', 'initial_image': './resources/textures/blocks/physics.png', 'interacted_image': interacted_image, 'object_id_rus': 'Физика'},
+            {'pos': (2700, 1700), 'object_id': 'russian', 'initial_image': './resources/textures/blocks/russian.png', 'interacted_image': interacted_image, 'object_id_rus': 'Русский язык'},
+            {'pos': (3500, 1700), 'object_id': 'social', 'initial_image': './resources/textures/blocks/social.png', 'interacted_image': interacted_image, 'object_id_rus': 'Правоведение'},
+            {'pos': (3700, 1700), 'object_id': 'chemistry', 'initial_image': './resources/textures/blocks/chemistry.png', 'interacted_image': interacted_image, 'object_id_rus': 'Химия'},
         ]
 
         for obj_data in interactable_data:
-            InteractableObject(obj_data['pos'], [self.visible_sprites], self.obstacle_sprites, obj_data['object_id'], obj_data['initial_image'], obj_data['interacted_image'])
+            g = InteractableObject(obj_data['pos'], [self.visible_sprites], self.obstacle_sprites, object_id=obj_data['object_id'], initial_image=obj_data['initial_image'], interacted_image=obj_data['interacted_image'], obj_id_rus=obj_data['object_id_rus'])
+            self.interactable_objects.add(g)
+            
 
         self.player = PlayerPlatformer((1200,1750),[self.visible_sprites], self.obstacle_sprites)
         self.portal = Portal((4800, 1700), [self.visible_sprites, self.obstacle_sprites], self.player)
     
     def run(self):
+        self.check_interactable_hover()
         self.visible_sprites.custom_draw(self.player)
         for sprite in self.visible_sprites:
             if isinstance(sprite, PlayerPlatformer):
                 sprite.update([], False)
             else:
                 sprite.update()
-        self.check_interactable_hover()
+        
         self.draw()
+        
 
     def render_text(self, text, position):
         text_surface = self.font.render(text, True, (255, 255, 255))
@@ -116,9 +120,8 @@ class PlatformerWorld:
         world_mouse_y = mouse_pos[1] + self.visible_sprites.offset.y
         self.world_mouse_pos = (int(world_mouse_x), int(world_mouse_y))
         for interactable_object in self.interactable_objects:
-            if interactable_object.is_hovered(self.world_mouse_pos):
-                object_id_text = self.font.render(interactable_object.object_id, True, (255, 255, 255))  # White text
-                self.render_text(object_id_text, (mouse_pos[0] + 10, mouse_pos[1]))
+            if interactable_object.rect.collidepoint(self.world_mouse_pos):
+                self.render_text(interactable_object.obj_id_rus, (mouse_pos[0] + 30, mouse_pos[1] - 30))
         
 class YSortCamGroup(pygame.sprite.Group):
     def __init__(self):

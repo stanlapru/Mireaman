@@ -2,16 +2,17 @@
     "pos_x": 1200,
     "pos_y": 1300,
     "subjects": [
+        "chemistry",
+        "physics",
         "coding",
         "english",
-        "math",
-        "physics"
+        "math"
     ],
     "fps": 60,
     "demo_mode": false,
-    "width": 1280,
-    "height": 720,
-    "current_screen": "binary_hall",
+    "width": 1920,
+    "height": 1080,
+    "current_screen": "catapult_hall",
     "npc_interactions": {
         "tutorial-npc": {
             "dialog_seen": true
@@ -21,10 +22,7 @@
         },
         "task-1": {
             "dialog_seen": true
-        },
-        "task-2-pre": {
-            "dialog_seen": true
         }
     },
-    "sound_on": false
+    "sound_on": true
 }

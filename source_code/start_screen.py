@@ -20,6 +20,9 @@ class StartScreen:
 
         self.scale_background(2.0, 1)
 
+        self.controls_shown = False
+        self.controls_showing = False
+        
         self.buttons = []
         self.settings_buttons = []
         self.show_settings = False
@@ -71,6 +74,8 @@ class StartScreen:
             MenuButton('1920x1080', (self.scr.get_width() // 2, 450), self.font, lambda: self.change_resolution(1920, 1080)),
             MenuButton('Назад', (self.scr.get_width() // 2, 525), self.font, self.hide_resolution_options)
         ]
+        
+        self.control_button = MenuButton('Нажми, чтобы начать игру!', (self.scr.get_width() // 2, 600), self.font, self.hide_resolution_options)
         self.show_resolution = False
 
     def toggle_sound(self):
@@ -94,10 +99,11 @@ class StartScreen:
     def change_resolution(self, width, height):
         """Change scr resolution and save it."""
         self.current_resolution = (width, height)
-        pygame.display.set_mode((width, height))
+        self.scr = pygame.display.set_mode((width, height))
         self.save_settings()  # Save the new resolution
     
     def new_game(self):
+        self.controls_showing = True
         pygame.mixer.music.stop()
         print("Новая игра")
 
@@ -175,14 +181,25 @@ class StartScreen:
             if self.show_resolution:
                 for button in self.resolution_buttons:
                     button.draw(self.scr)
+                    # button.rect.x = self.scr.get_width() // 2
+                    button.position = (self.scr.get_width()//2, button.position[1])
             else:
                 for button in self.settings_buttons:
                     button.draw(self.scr)
+                    button.position = (self.scr.get_width()//2, button.position[1])
+        elif self.controls_showing:
+            self.render_text2("Привет! Ты начинаешь новое сохранение.", (self.scr.get_width()//2, 200))
+            self.render_text2("Для движения используй клавиши стрелок или WASD.", (self.scr.get_width()//2, 250))
+            self.render_text2("Для выбора интересующего предмета - прыгни под ним!", (self.scr.get_width()//2, 300))
+            self.render_text2("А чтобы поговорить с грифонами, подойди к ним и нажми Е!", (self.scr.get_width()//2, 350))
+            self.render_text2("При решении задач вводи свой ответ в поле внизу.", (self.scr.get_width()//2, 400))
+            self.render_text2("Это всё! Желаем найти тебе профессию мечты!", (self.scr.get_width()//2, 450))
+            self.control_button.draw(self.scr)
         else:
             for button in self.buttons:
                 button.draw(self.scr)
+                button.position = (self.scr.get_width()//2, button.position[1])
 
-        #self.render_text("indev v0.0.0", (0,0))
         self.render_title_text("Мир грифонов", (self.scr.get_width() // 2, 100))
 
     def render_title_text(self, text, position):
@@ -190,7 +207,7 @@ class StartScreen:
         text_rect = text_surface.get_rect(center=position) 
         self.scr.blit(text_surface, text_rect)
 
-    def render_text(self, text, position):
+    def render_text2(self, text, position):
         text_surface = self.font.render(text, True, (255, 255, 255))  
         text_rect = text_surface.get_rect(center=position)  
         self.scr.blit(text_surface, text_rect) 

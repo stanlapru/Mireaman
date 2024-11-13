@@ -182,7 +182,7 @@ class YSortCamGroup(pygame.sprite.Group):
         
     def custom_draw(self, player):
         self.offset.x = player.rect.centerx - self.half_width
-        self.offset.y = player.rect.centery - self.half_height
+        self.offset.y = player.rect.centery - self.half_height*1.5
         
         floor_offset_pos = self.floor_rect.topleft - self.offset
         self.display.blit(self.floor_surface, floor_offset_pos)

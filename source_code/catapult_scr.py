@@ -89,7 +89,7 @@ class CatapultHall:
             NPCPlatformer((3000,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/4/down_idle/1.png', 'task-1'),
         ]
         # 1200
-        self.player = PlayerPlatformer((3100,1800),[self.visible_sprites], self.obstacle_sprites)
+        self.player = PlayerPlatformer((1100,1800),[self.visible_sprites], self.obstacle_sprites)
         
         self.characters.add(self.player)
         for npc in self.npc_list:

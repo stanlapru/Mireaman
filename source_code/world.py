@@ -157,11 +157,11 @@ class World:
         self.map_group.draw(self.display_surface)
 
         # Check if player is interacting with any NPC
-        for npc in self.npc_list:
-            if npc.player_nearby and not self.dialog_box.dialog_active:
-                if pygame.key.get_pressed()[pygame.K_e]:
-                    self.dialog_box.load_dialog(npc.dialog_id)
-                    self.interact_with_npc(npc.dialog_id)
+        # for npc in self.npc_list:
+        #     if npc.player_nearby and not self.dialog_box.dialog_active:
+        #         if pygame.key.get_pressed()[pygame.K_e]:
+        #             self.dialog_box.load_dialog(npc.dialog_id)
+        #             self.interact_with_npc(npc.dialog_id)
 
         # Handle any additional drawing, such as the dialog box
         if self.dialog_box.dialog_active:
