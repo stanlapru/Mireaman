@@ -1,4 +1,4 @@
-import pygame
+import pygame, time, random
 from settings import *
 from support import *
 from tile_platformer import TilePlatformer
@@ -6,13 +6,11 @@ from player_platformer import PlayerPlatformer
 from interactable import InteractableObject
 from portal import Portal
 
-#Background color
 BACKGROUND = (20, 20, 20)
 
 SCREEN_WIDTH = 720
 SCREEN_HEIGHT = 480
 
-#Tiled map layer of tiles that you collide with
 MAP_COLLISION_LAYER = 1
 
 class PlatformerWorld:
@@ -34,7 +32,6 @@ class PlatformerWorld:
             'solids': import_csv_layout('./resources/tmx/platformer/platformer_background.csv'),
         }
         graphics = {
-            # 'overworld': import_folder('./resources/tmx/platformer/Assets/')
             'overworld': import_folder('./resources/tmx/tsx/Overworld/Overworld.png')
         }
 
@@ -59,18 +56,17 @@ class PlatformerWorld:
         #         if col == 'p':
 
         interacted_image = './resources/textures/blocks/selected.png'
-        # Add interactable objects
         interactable_data = [
             {'pos': (900, 1700), 'object_id': 'math', 'initial_image': './resources/textures/blocks/math.png', 'interacted_image': interacted_image, 'object_id_rus': 'Математика'},
             {'pos': (1100, 1700), 'object_id': 'english', 'initial_image': './resources/textures/blocks/english.png', 'interacted_image': interacted_image, 'object_id_rus': 'Иностранный язык'},
-            {'pos': (1300, 1700), 'object_id': 'biology', 'initial_image': './resources/textures/blocks/biology.png', 'interacted_image': interacted_image, 'object_id_rus': 'Биология'},
+            {'pos': (1300, 1700), 'object_id': 'physics', 'initial_image': './resources/textures/blocks/physics.png', 'interacted_image': interacted_image, 'object_id_rus': 'Физика'},
             {'pos': (1500, 1700), 'object_id': 'coding', 'initial_image': './resources/textures/blocks/coding.png', 'interacted_image': interacted_image, 'object_id_rus': 'Программирование'},
             {'pos': (2100, 1700), 'object_id': 'geography', 'initial_image': './resources/textures/blocks/geography.png', 'interacted_image': interacted_image, 'object_id_rus': 'География'},
             {'pos': (2300, 1700), 'object_id': 'literature', 'initial_image': './resources/textures/blocks/literature.png', 'interacted_image': interacted_image, 'object_id_rus': 'Литература'},
-            {'pos': (2500, 1700), 'object_id': 'physics', 'initial_image': './resources/textures/blocks/physics.png', 'interacted_image': interacted_image, 'object_id_rus': 'Физика'},
-            {'pos': (2700, 1700), 'object_id': 'russian', 'initial_image': './resources/textures/blocks/russian.png', 'interacted_image': interacted_image, 'object_id_rus': 'Русский язык'},
-            {'pos': (3500, 1700), 'object_id': 'social', 'initial_image': './resources/textures/blocks/social.png', 'interacted_image': interacted_image, 'object_id_rus': 'Правоведение'},
-            {'pos': (3700, 1700), 'object_id': 'chemistry', 'initial_image': './resources/textures/blocks/chemistry.png', 'interacted_image': interacted_image, 'object_id_rus': 'Химия'},
+            {'pos': (2500, 1700), 'object_id': 'russian', 'initial_image': './resources/textures/blocks/russian.png', 'interacted_image': interacted_image, 'object_id_rus': 'Русский язык'},
+            {'pos': (2700, 1700), 'object_id': 'social', 'initial_image': './resources/textures/blocks/social.png', 'interacted_image': interacted_image, 'object_id_rus': 'Правоведение'},
+            {'pos': (3500, 1700), 'object_id': 'chemistry', 'initial_image': './resources/textures/blocks/chemistry.png', 'interacted_image': interacted_image, 'object_id_rus': 'Химия'},
+            {'pos': (3700, 1700), 'object_id': 'biology', 'initial_image': './resources/textures/blocks/biology.png', 'interacted_image': interacted_image, 'object_id_rus': 'Биология'},
         ]
 
         for obj_data in interactable_data:
@@ -89,7 +85,7 @@ class PlatformerWorld:
                 sprite.update([], False)
             else:
                 sprite.update()
-        
+        self.visible_sprites.update_clouds()
         self.draw()
         
 
@@ -114,7 +110,6 @@ class PlatformerWorld:
             box_start_x += box_size + spacing
         
     def check_interactable_hover(self):
-        """Check for mouse hover and render object_id when hovering over an interactable object."""
         mouse_pos = pygame.mouse.get_pos()
         world_mouse_x = mouse_pos[0] + self.visible_sprites.offset.x
         world_mouse_y = mouse_pos[1] + self.visible_sprites.offset.y
@@ -130,9 +125,26 @@ class YSortCamGroup(pygame.sprite.Group):
         self.half_width = self.display.get_size()[0] // 2
         self.half_height = self.display.get_size()[1] // 2
         self.offset = pygame.math.Vector2()
-        self.floor_surface = pygame.transform.scale_by(pygame.image.load("./resources/tmx/platformer/platformer.png"),3)
-        #self.scale_background(3)
+        self.floor_surface = pygame.transform.scale_by(pygame.image.load("./resources/tmx/platformer/platformer2.png"),3)
         self.floor_rect = self.floor_surface.get_rect(topleft = (0,0))
+        self.clouds = pygame.sprite.Group()
+        self.last_cloud_spawn_time = time.time()
+        
+    def spawn_cloud(self):
+        cloud_image_path = random.choice(["./resources/textures/cloud.png", "./resources/textures/cloud2.png"])
+        cloud_y = random.randint(50, self.half_height // 2)  
+        cloud = Cloud(self.display.get_width(), cloud_y, cloud_image_path)
+        self.clouds.add(cloud)
+
+    def update_clouds(self):
+        if time.time() - self.last_cloud_spawn_time > 5:
+            self.spawn_cloud()
+            self.last_cloud_spawn_time = time.time()
+
+        self.clouds.update()
+        for cloud in self.clouds:
+            if cloud.rect.right < 0:
+                cloud.kill() 
 
     def scale_background(self, scale_factor):
         width1, height1 = self.floor_surface.get_size()
@@ -144,9 +156,27 @@ class YSortCamGroup(pygame.sprite.Group):
         self.offset.y = player.rect.centery - self.half_height
         
         floor_offset_pos = self.floor_rect.topleft - self.offset
+        
+        for cloud in self.clouds:
+            self.display.blit(cloud.image, cloud.rect)
+            
         self.display.blit(self.floor_surface, floor_offset_pos)
         
         for sprite in sorted(self.sprites(), key=lambda sprite: sprite.rect.centery):
             offset_pos = sprite.rect.topleft - self.offset
             self.display.blit(sprite.image, offset_pos)
+            
+
+            
+class Cloud(pygame.sprite.Sprite):
+    def __init__(self, x, y, image_path):
+        super().__init__()
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.transform.scale_by(self.image, 1.5)  # Scale cloud if necessary
+        self.rect = self.image.get_rect(midleft=(x, y))
+        self.speed = 1  # Cloud movement speed
+
+    def update(self):
+        # Move cloud leftward
+        self.rect.x -= self.speed
         

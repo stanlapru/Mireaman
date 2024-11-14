@@ -20,18 +20,18 @@ class World:
         self.game = game
         self.create_map()
 
-        # If your dialog data is in a JSON file, you can load it here
+        
         with open('./data/dialogs.json', encoding="utf8") as f:
             self.dialog_data = json.load(f)
             
-        # Initialize the dialog box
+       
         self.dialog_box = DialogBox(self.display_surface, self.data, self.game)
 
-        # Pass dialog data to dialog box
+        
         self.dialog_box.set_dialog_data(self.dialog_data)
         
     def load_tileset(self, path, tile_size, scale_factor=3):
-        # This function is defined as above
+        
         tileset_image = pygame.image.load(path).convert_alpha()
         tileset_width, tileset_height = tileset_image.get_size()
         tiles_per_row = tileset_width // tile_size[0]
@@ -49,15 +49,15 @@ class World:
         return tiles
         
     def create_map(self):
-        # Load the Tiled map
+       
         self.tmx_data = pytmx.util_pygame.load_pygame('./resources/tmx/tsx/map.tmx')
         
-        # Create the map data and renderer
+      
         map_data = pyscroll.TiledMapData(self.tmx_data)
         map_layer = pyscroll.BufferedRenderer(map_data, self.display_surface.get_size())
         map_layer.zoom = 3
 
-        # Create the Pyscroll group
+
         self.map_group = pyscroll.PyscrollGroup(map_layer=map_layer, default_layer=4)
 
         self.obstacle_sprites = pygame.sprite.Group()
@@ -66,18 +66,17 @@ class World:
         for x, y, gid in collision_layer:
             if gid != 0:  # gid 0 means no tile
                 tile = self.tmx_data.get_tile_image_by_gid(gid)
-                if tile:  # If there's a tile (i.e., a filled tile, not empty)
+                if tile:  
                     obstacle = pygame.sprite.Sprite(self.obstacle_sprites)
                     obstacle.rect = pygame.Rect(x * self.tmx_data.tilewidth, 
                                                 y * self.tmx_data.tileheight, 
                                                 self.tmx_data.tilewidth, 
                                                 self.tmx_data.tileheight)
 
-        # Initialize player position
         if self.load_save == True:
             player_position = (self.data['pos_x'], self.data['pos_y'])
         else:
-            player_position = (516, 678)  # Default player start position
+            player_position = (516, 678) 
 
         # Создаем NPC, x-12, y-34
         self.npc_list = [
@@ -99,7 +98,6 @@ class World:
             NPC((1712,1252),self.map_group,self.data,"tutorial-npc",'./resources/textures/npc/1/down_idle/1.png'), # 15     farmer
         ]
         
-        # Create player sprite and add to map group
         self.player = Player(player_position, self.obstacle_sprites, self.data)
         self.map_group.add(self.player)
         for npc in self.npc_list:
@@ -109,7 +107,7 @@ class World:
     def run(self):
         running = True
         while running:
-            dt = self.clock.tick(60) / 1000  # Delta time for smooth movement
+            dt = self.clock.tick(60) / 1000  
             
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -122,7 +120,7 @@ class World:
                     running = False
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN and self.dialog_box.dialog_active: # Advance dialog
+                if event.type == pygame.MOUSEBUTTONDOWN and self.dialog_box.dialog_active:
                     self.dialog_box.advance()
             
             self.display_surface.fill('#1E7CB7')
@@ -137,52 +135,50 @@ class World:
     def run_world(self):
         npcs = [sprite for sprite in self.map_group.sprites() if isinstance(sprite, NPC)]
         if not self.dialog_box.dialog_active:
-            self.player.input(npcs)  # Handle player movement
+            self.player.input(npcs) 
         # else:
-        #     # If dialog is active, check if player advances the dialog
+        #   
         #     keys = pygame.key.get_pressed()
         #     if keys[pygame.K_e]:
         #         self.dialog_box.advance()
         
         self.map_group.center(self.player.rect.center)
 
-        # Update all sprites
         for sprite in self.map_group.sprites():
             if isinstance(sprite, NPC):
-                sprite.update(self.player.rect.center)  # Pass player's position to NPC
+                sprite.update(self.player.rect.center) 
             else:
                 sprite.update()
 
-        # Draw the map and sprites
+
         self.map_group.draw(self.display_surface)
 
-        # Check if player is interacting with any NPC
+       
         # for npc in self.npc_list:
         #     if npc.player_nearby and not self.dialog_box.dialog_active:
         #         if pygame.key.get_pressed()[pygame.K_e]:
         #             self.dialog_box.load_dialog(npc.dialog_id)
         #             self.interact_with_npc(npc.dialog_id)
 
-        # Handle any additional drawing, such as the dialog box
+        
         if self.dialog_box.dialog_active:
             self.dialog_box.render()
 
         self.loaded = True
-        # pygame.display.update()
+        
         
     def interact_with_npc(self, npc_id):
-        """Check dialog state and trigger the appropriate dialog."""
         npc_data = self.data.get('npc_interactions', {}).get(npc_id, {'dialog_seen': False})
 
-        # Check if the main dialog has been seen
+        
         if npc_data['dialog_seen']:
-            # Load an alternate dialog (e.g., a second phase or small talk)
+           
             self.dialog_box.load_dialog(f"{npc_id}.post")
         else:
-            # Load the initial dialog
+            
             self.dialog_box.load_dialog(f"{npc_id}.main")
 
-        # Once dialog finishes, mark it as seen
+  
         self.dialog_box.mark_dialog_as_seen(npc_id)
 
         
@@ -190,8 +186,8 @@ class World:
     def pause_screen(self):
         paused = True
         overlay = pygame.Surface(self.display_surface.get_size())
-        overlay.set_alpha(128)  # Set transparency (128 out of 255)
-        overlay.fill((50, 50, 50))  # Dark grey overlay
+        overlay.set_alpha(128)  
+        overlay.fill((50, 50, 50))  
         font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
         titlefont = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 58)
         pygame.mixer.music.pause()
@@ -215,13 +211,11 @@ class World:
             mouse_pos = pygame.mouse.get_pos()
 
             for button in buttons:
-                # Change text color on hover
                 if button["rect"].collidepoint(mouse_pos):
                     text_color = button_hover_color
                 else:
                     text_color = button_color
                 
-                # Render the button text without background
                 button_text = font.render(button["text"], True, text_color)
                 self.display_surface.blit(button_text, (button["rect"].x + button["rect"].width // 2 - button_text.get_width() // 2, button["rect"].y + button["rect"].height // 2 - button_text.get_height() // 2))
 

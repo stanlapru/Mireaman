@@ -6,13 +6,11 @@ from player_platformer import PlayerPlatformer
 from npc_platformer import NPCPlatformer
 from dialog_box import DialogBox
 
-#Background color
 BACKGROUND = (20, 20, 20)
 
 SCREEN_WIDTH = 720
 SCREEN_HEIGHT = 480
 
-#Tiled map layer of tiles that you collide with
 MAP_COLLISION_LAYER = 1
 
 class TutorialHall:
@@ -30,14 +28,14 @@ class TutorialHall:
         pygame.mixer.music.play(-1)
         self.create_map()
         
-        # If your dialog data is in a JSON file, you can load it here
+
         with open('./data/dialogs.json', encoding="utf8") as f:
             self.dialog_data = json.load(f)
             
-        # Initialize the dialog box
+
         self.dialog_box = DialogBox(self.display_surface, self.data, self.game)
 
-        # Pass dialog data to dialog box
+
         self.dialog_box.set_dialog_data(self.dialog_data)
         
     def create_map(self):
@@ -49,7 +47,7 @@ class TutorialHall:
             'solids': import_csv_layout('./resources/tmx/hall1/hall1_background.csv'),
         }
         graphics = {
-            # 'overworld': import_folder('./resources/tmx/platformer/Assets/')
+
             'Room_Builder_free_16x16': import_folder("./resources/tmx/tsx/16x16/Room_Builder_free_16x16.png")
         }
 
@@ -63,19 +61,12 @@ class TutorialHall:
                     if col != '-1':
                         x = col_idx * TILESIZE
                         y = row_idx * TILESIZE
-                        # tile_index = int(col)
-                        # tile_surface = graphics['overworld'][tile_index]
+
                         if style == 'boundary':
                             TilePlatformer((x,y), [self.obstacle_sprites], 'tile_surface')
                         if style == 'boundary2':
                             TilePlatformer((x,y), [self.obstacle_sprites, self.boundary_tiles], 'tile_surface')
-                        # if style == 'decorations1' or style == 'decorations2' or style == 'decorations3':
-                        #     Tile((x,y), [self.visible_sprites], 'walkable')
-                        # if style == 'solids1' or style == 'solids2':
-                        #     Tile((x,y), [self.visible_sprites], 'solid')
-        #         if col == 'x':
-        #             Tile((x,y),[self.visible_sprites, self.obstacle_sprites])
-        #         if col == 'p':
+
 
         self.npc_list = [
             NPCPlatformer((1500,1825),[self.visible_sprites],self.obstacle_sprites,'./resources/textures/npc/1/down_idle/1.png', 'tutorial-npc'),
@@ -91,10 +82,9 @@ class TutorialHall:
     def run(self):
         self.screen.fill((32,23,41))
         self.visible_sprites.custom_draw(self.player)
-         # Update all sprites
         for sprite in self.visible_sprites.sprites():
             if isinstance(sprite, NPCPlatformer):
-                sprite.update(self.player.rect.center)  # Pass player's position to NPC
+                sprite.update(self.player.rect.center)
             elif isinstance(sprite, PlayerPlatformer):
                 sprite.update(self.npc_list, False)
             else:
@@ -102,15 +92,14 @@ class TutorialHall:
         
         # if not self.dialog_box.dialog_active:
         #     self.player.input(self.npc_list)
-        
-        # Check if player is interacting with any NPC
+
         for npc in self.npc_list:
             if npc.player_nearby and not self.dialog_box.dialog_active:
                 if pygame.key.get_pressed()[pygame.K_e]:
                     self.dialog_box.load_dialog(npc.dialog_id, "main")
                     self.interact_with_npc(npc.dialog_id)
 
-        # Handle any additional drawing, such as the dialog box
+
         if self.dialog_box.dialog_active:
             self.dialog_box.render()
             
@@ -121,15 +110,15 @@ class TutorialHall:
         """Check dialog state and trigger the appropriate dialog."""
         npc_data = self.data.get('npc_interactions', {}).get(npc_id, {'dialog_seen': False})
 
-        # Check if the main dialog has been seen
+
         if npc_data['dialog_seen']:
-            # Load an alternate dialog (e.g., a second phase or small talk)
+           
             self.dialog_box.load_dialog(f"{npc_id}", "main")
         else:
-            # Load the initial dialog
+
             self.dialog_box.load_dialog(f"{npc_id}","main")
 
-        # Once dialog finishes, mark it as seen
+
         self.dialog_box.mark_dialog_as_seen(npc_id)
 
     def render_text(self, text, position):

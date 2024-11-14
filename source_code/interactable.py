@@ -10,11 +10,10 @@ class InteractableObject(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(pygame.image.load(initial_image).convert_alpha(), (48, 48))
         self.rect = self.image.get_rect(topleft=pos)
         print(self.rect.x, self.rect.y, self.rect.w, self.rect.h)
-        self.hitbox = self.rect.inflate(-10, -10)  # Adjust hitbox size if needed
+        self.hitbox = self.rect.inflate(-10, -10) 
         self.interacted_image = pygame.transform.scale(pygame.image.load(interacted_image).convert_alpha(), (48,48))
         self.interacted = False
 
-        # Add to the obstacle group for collision detection
         self.obstacle_sprites = obstacle_sprites
         self.obstacle_sprites.add(self)
         
@@ -30,6 +29,5 @@ class InteractableObject(pygame.sprite.Sprite):
         return self.object_id
     
     def is_hovered(self, mouse_pos):
-        """Returns True if the mouse is hovering over the object."""
         print(self.object_id)
         return self.rect.collidepoint(mouse_pos)

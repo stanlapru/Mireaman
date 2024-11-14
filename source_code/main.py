@@ -30,13 +30,11 @@ class Game:
         }
         
         try: 
-            # the file already exists 
             with open('./data/savedata.json') as load_file: 
                 self.savedata = json.load(load_file) 
                 self.scr_width = load_file.read()
         except: 
             print('No savefile found. Creating new one.')
-            # create the file and store initial values 
             with open('./data/savedata.json', 'w') as store_file: 
                 json.dump(self.savedata, store_file, indent=4) 
         
@@ -46,7 +44,6 @@ class Game:
         self.screen = pygame.display.set_mode((self.savedata.get('width', 1280), (self.savedata.get('height', 720))))
         pygame.display.set_caption("Мир грифонов")
         
-        # Custom cursor
         cursor_surface = pygame.image.load('./resources/textures/cursor/Tiles/tile_0049.png')
         cursor_surface_32x32 = pygame.transform.scale(cursor_surface, (32, 32))
         hotspot = (0, 0)
@@ -67,8 +64,8 @@ class Game:
     def pause_screen(self):
         paused = True
         overlay = pygame.Surface(self.screen.get_size())
-        overlay.set_alpha(128)  # Set transparency (128 out of 255)
-        overlay.fill((50, 50, 50))  # Dark grey overlay
+        overlay.set_alpha(128) 
+        overlay.fill((50, 50, 50)) 
         font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
         titlefont = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 58)
         pygame.mixer.music.pause()
@@ -92,13 +89,11 @@ class Game:
             mouse_pos = pygame.mouse.get_pos()
 
             for button in buttons:
-                # Change text color on hover
                 if button["rect"].collidepoint(mouse_pos):
                     text_color = button_hover_color
                 else:
                     text_color = button_color
                 
-                # Render the button text without background
                 button_text = font.render(button["text"], True, text_color)
                 self.screen.blit(button_text, (button["rect"].x + button["rect"].width // 2 - button_text.get_width() // 2, button["rect"].y + button["rect"].height // 2 - button_text.get_height() // 2))
 
@@ -127,7 +122,6 @@ class Game:
                                 sys.exit()
                     
             pygame.display.flip()
-            #self.clock.tick(10)  # Slow down the loop for the pause screen
 
     # Главное меню
     def menu_screen(self):
@@ -149,15 +143,14 @@ class Game:
                     if main_screen:
                         main_screen.handle_mouse_motion(event.pos)
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    # atrocious code here, move on
                     # if main_screen.buttons[0].is_clicked(event.pos):
                     #     running = False
                     #     self.run(False) # new
                     if not main_screen.show_resolution and not main_screen.show_settings:
-                        if main_screen.control_button.is_clicked(event.pos): # new game; platformer selection
+                        if main_screen.control_button.is_clicked(event.pos):
                             running = False
                             self.platformer_screen()
-                        if main_screen.buttons[1].is_clicked(event.pos): # load existing game
+                        if main_screen.buttons[1].is_clicked(event.pos): 
                             running = False
                             with open('./data/savedata.json', 'r') as file:
                                 data = json.load(file)
@@ -190,7 +183,7 @@ class Game:
             if platformer_world.portal.touched == True:
                 platformer_world.portal.save_selected_subjects()
                 self.portal_screen()
-            self.screen.fill('#1E7CB7')
+            self.screen.fill('#40A3FF')
             platformer_world.run()
             platformer_world.check_interactable_hover()
             pygame.display.update()
@@ -224,7 +217,7 @@ class Game:
                     running = False
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN and tutorial_scr.dialog_box.dialog_active: # Advance dialog
+                if event.type == pygame.MOUSEBUTTONDOWN and tutorial_scr.dialog_box.dialog_active: 
                     tutorial_scr.dialog_box.advance()
                 
             if tutorial_scr.done == True:
@@ -248,7 +241,7 @@ class Game:
                     running = False
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN and catapult_scr.dialog_box.dialog_active: # Advance dialog
+                if event.type == pygame.MOUSEBUTTONDOWN and catapult_scr.dialog_box.dialog_active:
                     catapult_scr.dialog_box.advance()
                 catapult_scr.task_overlay.handle_event(event)
             if catapult_scr.done == True:
@@ -272,7 +265,7 @@ class Game:
                     running = False
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONDOWN and binary_scr.dialog_box.dialog_active: # Advance dialog
+                if event.type == pygame.MOUSEBUTTONDOWN and binary_scr.dialog_box.dialog_active: 
                     binary_scr.dialog_box.advance()
                 binary_scr.task_overlay.handle_event(event)
             if binary_scr.done == True:

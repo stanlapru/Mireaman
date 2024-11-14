@@ -6,13 +6,11 @@ from player_platformer import PlayerPlatformer
 from npc_platformer import NPCPlatformer
 from dialog_box import DialogBox
 
-#Background color
 BACKGROUND = (20, 20, 20)
 
 SCREEN_WIDTH = 720
 SCREEN_HEIGHT = 480
 
-#Tiled map layer of tiles that you collide with
 MAP_COLLISION_LAYER = 1
 
 class BinaryHall:
@@ -34,14 +32,14 @@ class BinaryHall:
         pygame.mixer.music.play(-1)
         self.create_map()
         
-        # If your dialog data is in a JSON file, you can load it here
+        
         with open('./data/dialogs.json', encoding="utf8") as f:
             self.dialog_data = json.load(f)
             
-        # Initialize the dialog box
+
         self.dialog_box = DialogBox(self.display_surface, self.data, self.game)
 
-        # Pass dialog data to dialog box
+        
         self.dialog_box.set_dialog_data(self.dialog_data)
         
         self.task_overlay = TaskOverlay(screen, self.font, "Биту необходимо найти файл курсовой работы, но он не знает, где он находится, так как понимает только двоичную систему. Переведи адрес файла - 164 - в понятный для Бита вид.", "10100100", self.dialog_box)
@@ -70,11 +68,11 @@ class BinaryHall:
                         x = col_idx * TILESIZE
                         y = row_idx * TILESIZE
                         if style in ['boundary']:
-                            # Add to initial tiles
+                            
                             tile = TilePlatformer((x, y), [self.obstacle_sprites], 'tile_surface')
                             self.initial_tiles.add(tile)
                         elif style in ['boundary2']:
-                            # Add to alternative tiles (but don't make them visible yet)
+                            
                             tile = TilePlatformer((x, y), [self.obstacle_sprites, self.boundary_tiles], 'tile_surface')
                             # self.alternative_tiles.add(tile)
 
@@ -91,10 +89,9 @@ class BinaryHall:
     def run(self):
         self.screen.fill((32,23,41))
         self.visible_sprites.custom_draw(self.player)
-         # Update all sprites
         for sprite in self.visible_sprites.sprites():
             if isinstance(sprite, NPCPlatformer):
-                sprite.update(self.player.rect.center)  # Pass player's position to NPC
+                sprite.update(self.player.rect.center) 
             elif isinstance(sprite, PlayerPlatformer):
                 sprite.update(self.npc_list, self.task_overlay.show_overlay and not self.task_overlay.is_solved)
             else:
@@ -112,14 +109,13 @@ class BinaryHall:
                     self.dialog_box.load_dialog(npc.dialog_id, "main")
                     self.interact_with_npc(npc.dialog_id)
 
-        # Handle any additional drawing, such as the dialog box
+       
         if self.dialog_box.dialog_active:
             self.dialog_box.render()
             
         if pygame.sprite.spritecollide(self.player, self.boundary_tiles, False):
             self.done = True
             
-        # self.render_text(str(self.player.rect.x)+", "+str(self.player.rect.y), (8,8))
         
         if self.player.rect.x > 1680:
             self.player.is_task = True
@@ -129,12 +125,11 @@ class BinaryHall:
         self.task_overlay.draw()
         
     def switch_to_alternative_layout(self):
-        """Switch the map from initial layout to alternative layout."""
-        # Remove all initial layout tiles from the visible sprite group
+       
         # self.visible_sprites.remove(self.initial_tiles)
         # self.obstacle_sprites.remove(self.initial_tiles)
 
-        # Add alternative tiles to the visible sprite group
+
         self.visible_sprites.add(self.alternative_tiles)
         self.obstacle_sprites.add(self.alternative_tiles)
         
@@ -145,15 +140,14 @@ class BinaryHall:
         """Check dialog state and trigger the appropriate dialog."""
         npc_data = self.data.get('npc_interactions', {}).get(npc_id, {'dialog_seen': False})
 
-        # Check if the main dialog has been seen
+       
         if npc_data['dialog_seen']:
-            # Load an alternate dialog (e.g., a second phase or small talk)
+           
             self.dialog_box.load_dialog(f"{npc_id}", "main")
         else:
-            # Load the initial dialog
+            
             self.dialog_box.load_dialog(f"{npc_id}","main")
 
-        # Once dialog finishes, mark it as seen
         self.dialog_box.mark_dialog_as_seen(npc_id)
 
     def render_text(self, text, position):
@@ -199,30 +193,27 @@ class TaskOverlay:
         self.font = font
         self.wrong = False
         self.is_solved = False
-        self.task_text = task_text  # The text describing the task
+        self.task_text = task_text 
         self.correct_answer = correct_answer
-        self.input_text = ""  # To store the player's input
-        self.show_overlay = False  # Only display when player reaches x >= 3200
-        self.box_rect = pygame.Rect(0, 0, 400, 1280)  # Position of the black box
-        self.input_rect = pygame.Rect(400, 720-60, 1280-620, 60)  # Position of the input field
-        self.enter_button_rect = pygame.Rect(1280-220, 720-60, 220, 60)  # Enter button
+        self.input_text = ""  
+        self.show_overlay = False  
+        self.box_rect = pygame.Rect(0, 0, 400, 1280)  
+        self.input_rect = pygame.Rect(400, 720-60, 1280-620, 60)  
+        self.enter_button_rect = pygame.Rect(1280-220, 720-60, 220, 60)  
 
     def draw(self):
         if not self.show_overlay:
             return
 
-        # Draw black box for task description
+        
         pygame.draw.rect(self.screen, (0, 0, 0), self.box_rect)
-        # Draw text for the task, wrapped inside the black box
         self.render_text(self.task_text, (self.box_rect.x + 10, self.box_rect.y + 10), self.box_rect.width - 20)
 
-        # Draw the input field
         pygame.draw.rect(self.screen, (255, 255, 255), self.input_rect)
-        # Render the current input text inside the input field
+        
         input_surface = self.font.render(self.input_text, True, (0, 0, 0))
         self.screen.blit(input_surface, (self.input_rect.x + 5, self.input_rect.y + 5))
 
-        # Draw the Enter button
         pygame.draw.rect(self.screen, (0, 255, 0), self.enter_button_rect)
         button_text = self.font.render("Ввод", True, (0, 0, 0))
         self.screen.blit(button_text, (self.enter_button_rect.x + 10, self.enter_button_rect.y + 5))
@@ -234,7 +225,6 @@ class TaskOverlay:
             self.wrong = False
 
     def render_text(self, text, position, wrap_width):
-        """Renders text with word wrapping."""
         words = text.split(' ')
         lines = []
         current_line = ""
@@ -257,18 +247,17 @@ class TaskOverlay:
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_BACKSPACE:
-                self.input_text = self.input_text[:-1]  # Handle backspace
+                self.input_text = self.input_text[:-1] 
             elif event.key == pygame.K_RETURN:
                 self.check_answer()
             else:
-                self.input_text += event.unicode  # Add typed character to input text
+                self.input_text += event.unicode 
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.enter_button_rect.collidepoint(event.pos):
                 self.check_answer()
 
     def check_answer(self):
-        """Check if the entered answer is correct."""
         if self.input_text.strip().lower() == self.correct_answer.lower():
             print("Correct Answer!")
             self.is_solved = True
@@ -278,7 +267,6 @@ class TaskOverlay:
             self.input_text = ""
 
     def update(self, player_x):
-        """Show the overlay when player reaches x >= 3200."""
         if player_x >= 1680 and not self.is_solved:
             self.show_overlay = True
         else:

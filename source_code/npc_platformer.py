@@ -46,7 +46,6 @@ class NPCPlatformer(pygame.sprite.Sprite):
             self.animations[animation] = self.scale_animation_frames(import_folder(full_path))
             
     def scale_animation_frames(self, frames):
-        """Scale all animation frames down by a factor of 3."""
         scaled_frames = []
         for frame in frames:
             scaled_frame = pygame.transform.scale(frame, (frame.get_width(), frame.get_height()))
@@ -54,9 +53,8 @@ class NPCPlatformer(pygame.sprite.Sprite):
         return scaled_frames
     
     def check_proximity(self, player_pos):
-        """Check if player is close enough to interact."""
         distance = pygame.math.Vector2(self.rect.center).distance_to(player_pos)
-        if distance < self.interact_distance:  # Example range for interaction
+        if distance < self.interact_distance: 
             self.player_nearby = True
         else:
             self.player_nearby = False
@@ -64,7 +62,7 @@ class NPCPlatformer(pygame.sprite.Sprite):
     def draw_interact_text(self, display_surface):
         """Draw the 'Interact' text above the NPC."""
         if self.player_nearby and not self.interacting:
-            interact_text = self.font.render('[E]', True, (255, 255, 255))  # White text
+            interact_text = self.font.render('[E]', True, (255, 255, 255))  
             display_surface.blit(interact_text, (display_surface.get_width() // 2, display_surface.get_height() // 2 - 50))
                 
     def get_status(self):

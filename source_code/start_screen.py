@@ -28,7 +28,7 @@ class StartScreen:
         self.show_settings = False
         
         self.sound_on = True
-        self.current_resolution = (scr.get_width(), scr.get_height())  # Default resolution
+        self.current_resolution = (scr.get_width(), scr.get_height())  
         self.load_settings()
         
         pygame.mixer.music.stop()
@@ -41,14 +41,12 @@ class StartScreen:
         self.create_buttons()
         
     def load_settings(self):
-        """Load settings like sound and resolution from the save file."""
         with open('./data/savedata.json', 'r') as f:
             self.save_data = json.load(f)
-        self.sound_on = self.save_data.get("sound_on", True)  # Load sound state
+        self.sound_on = self.save_data.get("sound_on", True) 
         self.current_resolution = (self.save_data.get("width", (1280)), self.save_data.get("height", (720)))
         
     def save_settings(self):
-        """Save the current settings (sound and resolution) into the save file."""
         self.save_data["sound_on"] = self.sound_on
         self.save_data["width"] = self.current_resolution[0]
         self.save_data["height"] = self.current_resolution[1]
@@ -79,28 +77,24 @@ class StartScreen:
         self.show_resolution = False
 
     def toggle_sound(self):
-        """Toggle sound on/off and save the state."""
         self.sound_on = not self.sound_on
         if self.sound_on:
-            pygame.mixer.music.set_volume(100)  # Enable sound
+            pygame.mixer.music.set_volume(100)  
         else:
-            pygame.mixer.music.set_volume(0)  # Disable sound
-        self.save_settings()  # Save the new sound state
-        self.settings_buttons[0].text = f'Звук: {"Включен" if self.sound_on else "Выключен"}'  # Update button text
+            pygame.mixer.music.set_volume(0)  
+        self.save_settings()  
+        self.settings_buttons[0].text = f'Звук: {"Включен" if self.sound_on else "Выключен"}' 
 
     def show_resolution_options(self):
-        """Display resolution selection buttons."""
         self.show_resolution = True
 
     def hide_resolution_options(self):
-        """Hide resolution selection buttons."""
         self.show_resolution = False
 
     def change_resolution(self, width, height):
-        """Change scr resolution and save it."""
         self.current_resolution = (width, height)
         self.scr = pygame.display.set_mode((width, height))
-        self.save_settings()  # Save the new resolution
+        self.save_settings() 
     
     def new_game(self):
         self.controls_showing = True
@@ -125,36 +119,32 @@ class StartScreen:
         sys.exit()
     
     def handle_mouse_click(self, pos: tuple[int, int]):
-        """Handle mouse click events based on current menu state."""
-        # Check which buttons are visible and should be interactive
         if self.show_settings:
-            if self.show_resolution:  # Resolution menu is shown
+            if self.show_resolution:  
                 for button in self.resolution_buttons:
                     if button.is_clicked(pos):
                         button.on_click()
                         break
-            else:  # Settings menu is shown
+            else: 
                 for button in self.settings_buttons:
                     if button.is_clicked(pos):
                         button.on_click()
                         break
-        else:  # Main menu is shown
+        else: 
             for button in self.buttons:
                 if button.is_clicked(pos):
                     button.on_click()
                     break
 
     def handle_mouse_motion(self, pos):
-        """Handle mouse hover events based on current menu state."""
-        # Check which buttons are visible and should show hover effects
         if self.show_settings:
-            if self.show_resolution:  # Resolution menu is shown
+            if self.show_resolution:  
                 for button in self.resolution_buttons:
                     button.on_hover(button.is_clicked(pos))
-            else:  # Settings menu is shown
+            else: 
                 for button in self.settings_buttons:
                     button.on_hover(button.is_clicked(pos))
-        else:  # Main menu is shown
+        else:  
             for button in self.buttons:
                 button.on_hover(button.is_clicked(pos))
 

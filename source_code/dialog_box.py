@@ -7,10 +7,10 @@ class DialogBox:
         self.game = game
         self.dialog_active = False
         self.text_lines = []
-        self.max_width = max_width  # Max width for the wrapped text area
-        self.padding = 10  # Padding inside the dialog box
+        self.max_width = max_width  
+        self.padding = 10  
         self.line_width = screen.get_width() - 200
-        self.dialog_rect = pygame.Rect(50, 500, self.line_width + self.padding * 2, 200)  # Dialog box area
+        self.dialog_rect = pygame.Rect(50, 500, self.line_width + self.padding * 2, 200)  
         self.text_color = (255, 255, 255)
         self.npc_image = None
         self.font = pygame.font.Font('resources/fonts/pixeloidSans.ttf', 36)
@@ -25,12 +25,11 @@ class DialogBox:
             pygame.transform.scale(pygame.image.load('./resources/textures/cursor/dialog/cursor1.png').convert_alpha(), (48, 48)),
             pygame.transform.scale(pygame.image.load('./resources/textures/cursor/dialog/cursor2.png').convert_alpha(), (48, 48))
         ]
-        self.cursor_image = self.cursor_images[0]  # Start with the first cursor image
+        self.cursor_image = self.cursor_images[0] 
         self.cursor_index = 0
-        self.cursor_position = (self.rect.x + self.rect.width - 100, self.rect.y + self.rect.height - 100)  # Adjust position
-        # Timer for switching the cursor every 500ms
+        self.cursor_position = (self.rect.x + self.rect.width - 100, self.rect.y + self.rect.height - 100)  
         self.cursor_animation_timer = 0
-        self.cursor_animation_interval = 500  # 500 milliseconds
+        self.cursor_animation_interval = 500
         
         self.choice_buttons = {
             'yes': pygame.image.load('resources/textures/cursor/dialog/tick.png').convert_alpha(),
@@ -40,7 +39,7 @@ class DialogBox:
         self.choice_action = None
         self.choice_texts = None
         self.choice_rects = {
-            'yes': self.choice_buttons['yes'].get_rect(topleft=(800, 500)),  # Adjust position as needed
+            'yes': self.choice_buttons['yes'].get_rect(topleft=(800, 500)),  
             'no': self.choice_buttons['no'].get_rect(topleft=(900, 500))
         }
         self.show_choices = False
@@ -49,28 +48,26 @@ class DialogBox:
         self.dialog_data = dialog_data
     
     def wrap_text(self, text):
-        """Wraps the given text into lines that fit within the max_width."""
-        words = text.split(' ')  # Split the text into words
+        words = text.split(' ')  
         wrapped_lines = []
         current_line = ''
         
         for word in words:
             if self.font.size(current_line + word)[0] > self.line_width:
-                wrapped_lines.append(current_line)  # Add the current line if it exceeds max width
+                wrapped_lines.append(current_line)  
                 current_line = word + ' '
             else:
                 current_line += word + ' '
         
         if current_line:
-            wrapped_lines.append(current_line.strip())  # Add the last line
+            wrapped_lines.append(current_line.strip())  
         
         return wrapped_lines
 
 
     def load_dialog(self, npc_id, dialog_section):
-        """Loads dialog text, NPC name, and image based on dialog ID."""
         self.npc_id = npc_id
-        self.dialog_index = 0  # Reset the dialog to the first line
+        self.dialog_index = 0 
         dialog = self.dialog_data.get(npc_id, {}).get(dialog_section)
 
         if dialog:
@@ -79,13 +76,12 @@ class DialogBox:
             self.update_current_dialog()
             self.npc_name = dialog['npc_name']
             self.npc_image = pygame.image.load(dialog['npc_texture']).convert_alpha()
-            self.npc_image = pygame.transform.scale_by(self.npc_image, 1)  # Adjust image size as needed
-            self.dialog_active = True  # Set dialog active
+            self.npc_image = pygame.transform.scale_by(self.npc_image, 1)  
+            self.dialog_active = True 
         else:
             print(f"Dialog section '{dialog_section}' for NPC '{npc_id}' not found.")
 
     def update_current_dialog(self):
-        """Updates the currently displayed dialog text and handles wrapping."""
         # if self.current_dialog and self.dialog_index < len(self.current_dialog):
         #     # Extract the text from the current dialog line (which is a dictionary)
         #     current_line = self.current_dialog[self.dialog_index]
@@ -96,14 +92,12 @@ class DialogBox:
         #         print(f"Error: Current dialog line is not properly formatted: {current_line}")
         # else:
         #     print("Dialog has finished.")
-        """Move to the next dialog line or dialog section if needed."""
         if self.current_dialog:
-            # Check if we're at the end of the current dialog lines
             if self.dialog_index < len(self.current_dialog):
                 current_line = self.current_dialog[self.dialog_index]
                 if isinstance(current_line, dict) and 'text' in current_line:
-                    wrapped_text = self.wrap_text(current_line['text'])  # Correctly access 'text' value
-                    self.displayed_text = wrapped_text  # Store the wrapped lines for rendering
+                    wrapped_text = self.wrap_text(current_line['text']) 
+                    self.displayed_text = wrapped_text 
                 else:
                     print(f"Error: Current dialog line is not properly formatted: {current_line}")
                     
@@ -112,13 +106,11 @@ class DialogBox:
                 
             print(self.dialog_index)
             if self.dialog_index == 1000:
-            
-                # We're at the end of the current dialog, check if there's a 'next' section
                 print(self.current_dialog, self.current_dialog_root)
                 
                 if 'next' in self.current_dialog_root:
                     next_section = self.current_dialog_root['next']
-                    self.load_dialog(self.npc_id, next_section)  # Continue to the next section
+                    self.load_dialog(self.npc_id, next_section)  
                 else:
                     # No more dialog; end conversation
                     self.dialog_active = False
@@ -130,14 +122,13 @@ class DialogBox:
 
 
     def advance(self):
-        """Advance to the next line of the dialog."""
         if self.current_dialog:
             if self.dialog_index < len(self.current_dialog) :
                 # Move to the next line
                 self.dialog_index += 1
                 self.update_current_dialog()
             else:
-                # End of dialog; reset dialog state
+                # End of dialog
                 self.dialog_active = False
                 self.current_dialog = None
                 self.displayed_text = []
@@ -146,31 +137,27 @@ class DialogBox:
             print("No dialog is currently active.")
 
     def update_cursor_animation(self):
-        """Updates the cursor animation by cycling between the two cursor images."""
         current_time = pygame.time.get_ticks()
         if current_time - self.cursor_animation_timer > self.cursor_animation_interval:
             self.cursor_animation_timer = current_time
-            self.cursor_index = (self.cursor_index + 1) % 2  # Switch between 0 and 1
+            self.cursor_index = (self.cursor_index + 1) % 2  
             self.cursor_image = self.cursor_images[self.cursor_index]
             
     def mark_dialog_as_seen(self, npc_id):
-        """Mark the current dialog as seen in the save data."""
-        # Ensure the NPC has an entry in the savedata.json
+
 
         # if npc_id not in self.data['npc_interactions']:
         #     self.data['npc_interactions'][npc_id] = {'dialog_seen': False}
         if npc_id not in self.data['npc_interactions']:
             self.data['npc_interactions'][npc_id] = {'dialog_seen': False}
 
-        # Set dialog_seen to True
         self.data['npc_interactions'][npc_id]['dialog_seen'] = True
 
 
-        # Save the updated game data to the file
+    
         self.save_game_data()
 
     def save_game_data(self):
-        """Save the updated game state to the JSON file."""
         with open('./data/savedata.json', 'w') as file:
             json.dump(self.data, file, indent=4)
             
@@ -207,8 +194,6 @@ class DialogBox:
 
     
     def render(self):
-        """Render the dialog box, NPC image, name, and wrapped dialog text."""
-        # Draw the dialog box background
         pygame.draw.rect(self.screen, (0, 0, 0, 0), self.rect)
         
         # Render the NPC image
